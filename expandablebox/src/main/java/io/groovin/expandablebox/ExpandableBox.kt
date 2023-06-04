@@ -88,6 +88,7 @@ fun ExpandableBox(
                 .swipeable(
                     state = swipeableState,
                     anchors = anchors,
+                    enabled = swipeableState.currentValue != ExpandableBoxState.HIDE,
                     orientation = Orientation.Vertical,
                     reverseDirection = isDownDirection,
                     thresholds = { _, _ -> FractionalThreshold(0.7f) },
