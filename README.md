@@ -1,4 +1,4 @@
-## GroovinCollapsingToolBar
+## GroovinExpandableBox
 [![Release](https://jitpack.io/v/gaiuszzang/GroovinExpandableBox.svg)](https://jitpack.io/#gaiuszzang/GroovinExpandableBox)  
 This library offers a Box Composable that can be expanded/reduced through up/down swipe gestures.
 
