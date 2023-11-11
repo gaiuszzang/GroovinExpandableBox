@@ -59,7 +59,7 @@ afterEvaluate {
                 from components.release
                 groupId = 'io.groovin'
                 artifactId = 'groovinexpandablebox'
-                version = '1.0.1'
+                version = '1.0.2'
             }
         }
     }
