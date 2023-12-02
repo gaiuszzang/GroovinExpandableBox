@@ -1,5 +1,9 @@
 package io.groovin.expandablebox.sampleapp
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.navigation.NavHostController
@@ -8,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.groovin.expandablebox.sampleapp.article.ArticleSampleScreen
 import io.groovin.expandablebox.sampleapp.music.MusicSampleScreen
+
 
 object GroovinDestination {
     const val Main = "Main"
@@ -22,7 +27,28 @@ val LocalNavAction = compositionLocalOf<GroovinAction> { error("can't find Groov
 fun GroovinNavGraph(
     navController: NavHostController = rememberNavController()
 ) {
-    NavHost(navController = navController, startDestination = GroovinDestination.Main) {
+    NavHost(
+        navController = navController,
+        startDestination = GroovinDestination.Main,
+        enterTransition = {
+            fadeIn(animationSpec = tween(700)) + slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Up,
+                animationSpec = tween(500)
+            )
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(700))
+        },
+        popEnterTransition = {
+            fadeIn(animationSpec = tween(700))
+        },
+        popExitTransition = {
+            fadeOut(animationSpec = tween(700)) + slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                animationSpec = tween(700)
+            )
+        }
+    ) {
         composable(GroovinDestination.Main) {
             MainScreen()
         }
