@@ -41,7 +41,7 @@ dependencies {
 ```kotlin
 ExpandableBox(
     modifier = modifier,
-    swipeableState = rememberSwipeableState(initialValue = ExpandableBoxState.FOLD),
+    expandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.FOLD),
     isDownDirection = true,
     isHideable = false,
     foldHeight = 200.dp
@@ -50,29 +50,29 @@ ExpandableBox(
 }
 ```
 There are 4 arguments to be aware of use.
- - `swipeableState` : ExpandableBox needs SwipeableState<ExpandableBoxState> for store and use its status. See the section below for details.
+ - `expandableBoxState` : ExpandableBox needs ExpandableBoxState for store and use its status. See the section below for details.
  - `isDownDirection` : In true case, It expands with a swipe up gesture and fold with a swipe down gesture. `default = true`
  - `isHideable` : In true case, User try to fold one more time in the folded state, it will be hidden. `default = false`
  - `foldHeight` : Define the Fold Status Height. `Mandatory`
 
 
-#### SwipeableState<ExpandableBoxState>
-ExpandableBox needs `SwipeableState<ExpandableBoxState>` instance for store and use its status.
+#### ExpandableBoxState
+ExpandableBox needs `ExpandableBoxState` instance for store and use its status.
 ```kotlin
-val swipeableState = rememberSwipeableState(initialValue = ExpandableBoxState.FOLD)
+val swipeableState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.FOLD)
 ```
 One of the values below must be set as the initial value.
-- `ExpandableBoxState.HIDE` : Begin with no visible.
-- `ExpandableBoxState.FOLD` : Begin with Folding Status.
-- `ExpandableBoxState.EXPAND` : Begin with Expanding Status.
+- `ExpandableBoxStateValue.HIDE` : Begin with no visible.
+- `ExpandableBoxStateValue.FOLD` : Begin with Folding Status.
+- `ExpandableBoxStateValue.EXPAND` : Begin with Expanding Status.
 
 
 
 #### ExpandableBoxScope
 A `ExpandableBoxScope` provides a scope with attributes for the content of ExpandableBox.
 - `progress: Float` : Progress value(0 ~ 1f) between `HIDE` to `FOLD`, or `FOLD` to `EXPAND`.
-- `progressState: ExpandableBoxState` : It means the current state and provide one of the following States : `HIDE, HIDING, FOLD, FOLDING, EXPAND`
-- `completedState: ExpandableBoxState` : It means the state that swipable action is completed, and provide one of the following States : `HIDE, FOLD, EXPAND`
+- `progressState: ExpandableBoxStateValue` : It means the current state and provide one of the following States : `HIDE, HIDING, FOLD, FOLDING, EXPAND`
+- `completedState: ExpandableBoxStateValue` : It means the state that swipable action is completed, and provide one of the following States : `HIDE, FOLD, EXPAND`
 
 also, ExpandableBoxScope inheriting BoxScope, it can be used the same as BoxScope.
 

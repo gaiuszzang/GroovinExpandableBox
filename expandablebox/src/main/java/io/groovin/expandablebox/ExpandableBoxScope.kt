@@ -4,12 +4,11 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 
 data class ExpandableBoxScope(
     val progress: Float,
-    val progressState: ExpandableBoxState,
-    val completedState: ExpandableBoxState,
+    val progressState: ExpandableBoxStateValue,
+    val completedState: ExpandableBoxStateValue,
     private val innerBoxScope: BoxScope
 ): BoxScope {
     @Stable

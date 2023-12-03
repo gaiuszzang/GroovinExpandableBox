@@ -26,7 +26,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.Transition
 import androidx.constraintlayout.compose.layoutId
-import io.groovin.expandablebox.ExpandableBoxState
+import io.groovin.expandablebox.ExpandableBoxStateValue
 import io.groovin.expandablebox.sampleapp.R
 
 
@@ -35,7 +35,7 @@ fun MusicPlayerScreen(
     modifier: Modifier = Modifier,
     selectedItemIndex: Int,
     progress: Float,
-    progressState: ExpandableBoxState,
+    progressState: ExpandableBoxStateValue,
     foldHeight: Dp,
     isUpside: Boolean,
     foldClick: () -> Unit,
@@ -51,8 +51,8 @@ fun MusicPlayerScreen(
             .fillMaxSize()
             .then(modifier)
     ) {
-        val imagePadding = if (progressState != ExpandableBoxState.HIDE && progressState != ExpandableBoxState.HIDING) ((progress * 10) + 10).dp else 10.dp
-        val cornerRadius = if (progressState != ExpandableBoxState.HIDE && progressState != ExpandableBoxState.HIDING) ((progress * 10) + 8).dp else 8.dp
+        val imagePadding = if (progressState != ExpandableBoxStateValue.HIDE && progressState != ExpandableBoxStateValue.HIDING) ((progress * 10) + 10).dp else 10.dp
+        val cornerRadius = if (progressState != ExpandableBoxStateValue.HIDE && progressState != ExpandableBoxStateValue.HIDING) ((progress * 10) + 8).dp else 8.dp
         IconButton(
             modifier = Modifier
                 .layoutId("foldButton"),
@@ -91,16 +91,16 @@ fun MusicPlayerScreen(
     }
 }
 
-private fun getConstraintSets(state: ExpandableBoxState, foldHeight: Dp) : Pair<ConstraintSet, ConstraintSet> {
+private fun getConstraintSets(state: ExpandableBoxStateValue, foldHeight: Dp) : Pair<ConstraintSet, ConstraintSet> {
     return when(state) {
-        ExpandableBoxState.HIDE, ExpandableBoxState.HIDING -> Pair(hideConstraintSet(foldHeight), foldConstraintSet())
+        ExpandableBoxStateValue.HIDE, ExpandableBoxStateValue.HIDING -> Pair(hideConstraintSet(foldHeight), foldConstraintSet())
         else -> Pair(foldConstraintSet(), expandConstraintSet())
     }
 }
 
-private fun getTransition(state: ExpandableBoxState): Transition? {
+private fun getTransition(state: ExpandableBoxStateValue): Transition? {
     return when(state) {
-        ExpandableBoxState.HIDE, ExpandableBoxState.HIDING -> null
+        ExpandableBoxStateValue.HIDE, ExpandableBoxStateValue.HIDING -> null
         else -> foldExpandTransition()
     }
 }

@@ -8,10 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,12 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
-import io.groovin.expandablebox.ExpandableBoxState
+import io.groovin.expandablebox.ExpandableBoxStateValue
+import io.groovin.expandablebox.rememberExpandableBoxState
 import io.groovin.expandablebox.sampleapp.ui.theme.Pink80
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ArticleSampleScreen() {
     val coroutineScope = rememberCoroutineScope()
@@ -37,8 +35,8 @@ fun ArticleSampleScreen() {
     var selectedArticle by remember { mutableStateOf(articleList[0]) }
     val foldHeight = remember { 200.dp }
     Box(modifier = Modifier.fillMaxSize()) {
-        val swipeableState = rememberSwipeableState(
-            initialValue = ExpandableBoxState.FOLD,
+        val swipeableState = rememberExpandableBoxState(
+            initialValue = ExpandableBoxStateValue.FOLD,
             confirmStateChange = {
                 true
             }
@@ -55,7 +53,7 @@ fun ArticleSampleScreen() {
                 .padding(top = 100.dp)
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(color = Pink80),
-            swipeableState = swipeableState,
+            expandableBoxState = swipeableState,
             isDownDirection = true,
             isHideable = false,
             foldHeight = foldHeight
@@ -78,16 +76,16 @@ fun ArticleSampleScreen() {
                     onItemClick = {
                         selectedArticle = it
                         coroutineScope.launch {
-                            swipeableState.animateTo(ExpandableBoxState.FOLD)
+                            swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
                         }
                     }
                 )
             }
             BackHandler(
-                enabled = (completedState == ExpandableBoxState.EXPAND || progressState == ExpandableBoxState.EXPAND)
+                enabled = (completedState == ExpandableBoxStateValue.EXPAND || progressState == ExpandableBoxStateValue.EXPAND)
             ) {
                 coroutineScope.launch {
-                    swipeableState.animateTo(ExpandableBoxState.FOLD)
+                    swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
                 }
             }
         }
