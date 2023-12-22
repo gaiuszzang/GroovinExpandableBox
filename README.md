@@ -2,9 +2,9 @@
 [![Release](https://jitpack.io/v/gaiuszzang/GroovinExpandableBox.svg)](https://jitpack.io/#gaiuszzang/GroovinExpandableBox)  
 This library offers a Box Composable that can be expanded/reduced through up/down swipe gestures.
 
-|                                                    MusicPlayer Sample                                                    |                                                    Article Page Sample                                                     |
-|:------------------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------------------:|
-| ![music_sample](https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/5cca2871-b694-4002-955a-26f51385c0b6) | ![article_sample](https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/78bdc12b-6884-4d4b-9470-76440474d461) |
+|                                                                    MusicPlayer Sample                                                                     |                                                                    Article Page Sample                                                                    |                                                                    Map Sample                                                                     |
+|:---------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------:|
+| <img src="https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/5cca2871-b694-4002-955a-26f51385c0b6" alt="MusicPlayerSample" width="240px"> | <img src="https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/78bdc12b-6884-4d4b-9470-76440474d461" alt="ArticlePageSample" width="240px"> | <img src="https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/233f2b70-f706-45fc-89b4-d92227b6467e" alt="MapSample" width="240px"> |
 
 
 ## Including in your project
@@ -41,38 +41,43 @@ dependencies {
 ```kotlin
 ExpandableBox(
     modifier = modifier,
-    expandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.FOLD),
-    isDownDirection = true,
-    isHideable = false,
-    foldHeight = 200.dp
+    expandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.Fold),
+    swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
+    foldHeight = 100.dp,
+    halfExpandHeight = 300.dp
 ) {
     Content(...)   //Contents Composable
 }
 ```
 There are 4 arguments to be aware of use.
  - `expandableBoxState` : ExpandableBox needs ExpandableBoxState for store and use its status. See the section below for details.
- - `isDownDirection` : In true case, It expands with a swipe up gesture and fold with a swipe down gesture. `default = true`
- - `isHideable` : In true case, User try to fold one more time in the folded state, it will be hidden. `default = false`
- - `foldHeight` : Define the Fold Status Height. `Mandatory`
+ - `swipeDirection` : You can set the Swipe direction for expanding this. `default = SwipeUpToExpand`
+ - `foldHeight` : Define the Minimized Height. `Mandatory`
+ - `halfExpandHeight` : Define the Half Expanded Height If you want to use Half Expanded State. If not defined, half expanded state is not used. `Optional`
+ - `expandHeight` : Define the Fully Expanded Height. The default is `Dp.Unspecified`, which sets it to the parent's maximum height. `Optional`
 
 
 #### ExpandableBoxState
 ExpandableBox needs `ExpandableBoxState` instance for store and use its status.
 ```kotlin
-val swipeableState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.FOLD)
+val expandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.Fold)
 ```
 One of the values below must be set as the initial value.
-- `ExpandableBoxStateValue.HIDE` : Begin with no visible.
-- `ExpandableBoxStateValue.FOLD` : Begin with Folding Status.
-- `ExpandableBoxStateValue.EXPAND` : Begin with Expanding Status.
+- `ExpandableBoxStateValue.Fold` : Begin with Minimized state.
+- `ExpandableBoxStateValue.HalfExpand` : Begin with Half Expanded state. Note that halfExpandHeight parameter in ExpandableBox should be defined to specific value for use this.
+- `ExpandableBoxStateValue.Expand` : Begin with Fully Expanded state.
 
-
+ExpandableBoxState exposes following parameters.
+- `completedValue` : Indicates that latest completion State : `Fold`, `HalfExpand`, `Expand`
+- `progressValue` : Indicates that current Progress State : `Fold`, `Folding`, `HalfExpanding`, `Expanding`, `Expand`
+- `offset` : Indicates that current height pixel.
+Note that `Folding`, `HalfExpand` State is only available when only Half Expand state is used.
 
 #### ExpandableBoxScope
 A `ExpandableBoxScope` provides a scope with attributes for the content of ExpandableBox.
-- `progress: Float` : Progress value(0 ~ 1f) between `HIDE` to `FOLD`, or `FOLD` to `EXPAND`.
-- `progressState: ExpandableBoxStateValue` : It means the current state and provide one of the following States : `HIDE, HIDING, FOLD, FOLDING, EXPAND`
-- `completedState: ExpandableBoxStateValue` : It means the state that swipable action is completed, and provide one of the following States : `HIDE, FOLD, EXPAND`
+- `progress: Float` : Progress value(0 ~ 1f) between `Fold` to `Expand`(in use Half Expand state case, `Fold` to `HalfExpand`, or `HalfExpand` to `Expand`).
+- `completedState: ExpandableBoxStateValue` : It is same with ExpandableBoxState.completedValue
+- `progressState: ExpandableBoxStateValue` : It is same with ExpandableBoxState.progressValue
 
 also, ExpandableBoxScope inheriting BoxScope, it can be used the same as BoxScope.
 

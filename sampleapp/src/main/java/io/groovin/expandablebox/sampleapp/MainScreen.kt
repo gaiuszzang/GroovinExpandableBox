@@ -46,6 +46,13 @@ fun MainScreen() {
                     navAction.moveToArticleExpandBox()
                 }
             )
+
+            MainItem(
+                text = "Sample 3 : Map",
+                onClick = {
+                    navAction.moveToMapExpandBox()
+                }
+            )
         }
     }
 }

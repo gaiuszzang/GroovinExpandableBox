@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
 import io.groovin.expandablebox.ExpandableBoxStateValue
+import io.groovin.expandablebox.ExpandableBoxSwipeDirection
 import io.groovin.expandablebox.rememberExpandableBoxState
 import io.groovin.expandablebox.sampleapp.ui.theme.Pink80
 import kotlinx.coroutines.launch
@@ -33,19 +34,16 @@ fun ArticleSampleScreen() {
     val coroutineScope = rememberCoroutineScope()
     val articleList = remember { getArticleList() }
     var selectedArticle by remember { mutableStateOf(articleList[0]) }
-    val foldHeight = remember { 200.dp }
     Box(modifier = Modifier.fillMaxSize()) {
         val swipeableState = rememberExpandableBoxState(
-            initialValue = ExpandableBoxStateValue.FOLD,
-            confirmStateChange = {
-                true
-            }
+            initialValue = ExpandableBoxStateValue.Fold
         )
         ArticleContentScreen(
             modifier = Modifier.fillMaxSize().padding(bottom = 200.dp),
             title = selectedArticle.title,
             content = selectedArticle.contents
         )
+
         ExpandableBox(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -54,9 +52,8 @@ fun ArticleSampleScreen() {
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(color = Pink80),
             expandableBoxState = swipeableState,
-            isDownDirection = true,
-            isHideable = false,
-            foldHeight = foldHeight
+            swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
+            foldHeight = remember { 200.dp }
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -76,16 +73,16 @@ fun ArticleSampleScreen() {
                     onItemClick = {
                         selectedArticle = it
                         coroutineScope.launch {
-                            swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
+                            swipeableState.animateTo(ExpandableBoxStateValue.Fold)
                         }
                     }
                 )
             }
             BackHandler(
-                enabled = (completedState == ExpandableBoxStateValue.EXPAND || progressState == ExpandableBoxStateValue.EXPAND)
+                enabled = (completedState == ExpandableBoxStateValue.Expand || progressState == ExpandableBoxStateValue.Expand)
             ) {
                 coroutineScope.launch {
-                    swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
+                    swipeableState.animateTo(ExpandableBoxStateValue.Fold)
                 }
             }
         }
