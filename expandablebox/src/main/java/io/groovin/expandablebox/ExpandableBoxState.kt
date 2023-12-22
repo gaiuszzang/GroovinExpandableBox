@@ -60,8 +60,11 @@ open class ExpandableBoxState(
     internal val confirmStateChange: (newValue: ExpandableBoxStateValue) -> Boolean = { true }
 ) {
 
-    var currentValue: ExpandableBoxStateValue by mutableStateOf(initialValue)
+    var completedValue: ExpandableBoxStateValue by mutableStateOf(initialValue)
         private set
+
+    var progressValue: ExpandableBoxStateValue by mutableStateOf(initialValue)
+        internal set
 
     var isAnimationRunning: Boolean by mutableStateOf(false)
         private set
@@ -87,7 +90,7 @@ open class ExpandableBoxState(
     internal fun ensureInit(newAnchors: Map<Float, ExpandableBoxStateValue>) {
         if (anchors.isEmpty()) {
             // need to do initial synchronization synchronously :(
-            val initialOffset = newAnchors.getOffset(currentValue)
+            val initialOffset = newAnchors.getOffset(completedValue)
             requireNotNull(initialOffset) {
                 "The initial value must have an associated anchor."
             }
@@ -105,7 +108,7 @@ open class ExpandableBoxState(
             // the state so we snap to the offset associated to the initial value.
             minBound = newAnchors.keys.minOrNull()!!
             maxBound = newAnchors.keys.maxOrNull()!!
-            val initialOffset = newAnchors.getOffset(currentValue)
+            val initialOffset = newAnchors.getOffset(completedValue)
             requireNotNull(initialOffset) {
                 "The initial value must have an associated anchor."
             }
@@ -128,7 +131,7 @@ open class ExpandableBoxState(
             } else {
                 // we're not animating, proceed by finding the new anchors for an old value
                 val actualOldValue = oldAnchors[offset.value]
-                val value = if (actualOldValue == currentValue) currentValue else actualOldValue
+                val value = if (actualOldValue == completedValue) completedValue else actualOldValue
                 newAnchors.getOffset(value) ?: newAnchors
                     .keys.minByOrNull { abs(it - offset.value) }!!
             }
@@ -138,7 +141,7 @@ open class ExpandableBoxState(
                 // If the animation was interrupted for any reason, snap as a last resort.
                 snapInternalToOffset(targetOffset)
             } finally {
-                currentValue = newAnchors.getValue(targetOffset)
+                completedValue = newAnchors.getValue(targetOffset)
                 minBound = newAnchors.keys.minOrNull()!!
                 maxBound = newAnchors.keys.maxOrNull()!!
             }
@@ -189,13 +192,13 @@ open class ExpandableBoxState(
             // TODO(calintat): Track current velocity (b/149549482) and use that here.
             val target = animationTarget.value ?: computeTarget(
                 offset = offset.value,
-                lastValue = anchors.getOffset(currentValue) ?: offset.value,
+                lastValue = anchors.getOffset(completedValue) ?: offset.value,
                 anchors = anchors.keys,
                 thresholds = thresholds,
                 velocity = 0f,
                 velocityThreshold = Float.POSITIVE_INFINITY
             )
-            return anchors[target] ?: currentValue
+            return anchors[target] ?: completedValue
         }
 
     val progress: ExpandableBoxSwipeProgress
@@ -206,8 +209,8 @@ open class ExpandableBoxState(
             val fraction: Float
             when (bounds.size) {
                 0 -> {
-                    from = currentValue
-                    to = currentValue
+                    from = completedValue
+                    to = completedValue
                     fraction = 1f
                 }
                 1 -> {
@@ -231,7 +234,7 @@ open class ExpandableBoxState(
         }
 
     val direction: Float
-        get() = anchors.getOffset(currentValue)?.let { sign(offset.value - it) } ?: 0f
+        get() = anchors.getOffset(completedValue)?.let { sign(offset.value - it) } ?: 0f
 
     suspend fun snapTo(targetValue: ExpandableBoxStateValue) {
         latestNonEmptyAnchorsFlow.collect { anchors ->
@@ -240,7 +243,7 @@ open class ExpandableBoxState(
                 "The target value must have an associated anchor."
             }
             snapInternalToOffset(targetOffset)
-            currentValue = targetValue
+            completedValue = targetValue
         }
     }
 
@@ -257,15 +260,15 @@ open class ExpandableBoxState(
                 val endValue = anchors
                     // fighting rounding error once again, anchor should be as close as 0.5 pixels
                     .filterKeys { anchorOffset -> abs(anchorOffset - endOffset) < 0.5f }
-                    .values.firstOrNull() ?: currentValue
-                currentValue = endValue
+                    .values.firstOrNull() ?: completedValue
+                completedValue = endValue
             }
         }
     }
 
     suspend fun performFling(velocity: Float) {
         latestNonEmptyAnchorsFlow.collect { anchors ->
-            val lastAnchor = anchors.getOffset(currentValue)!!
+            val lastAnchor = anchors.getOffset(completedValue)!!
             val targetValue = computeTarget(
                 offset = offset.value,
                 lastValue = lastAnchor,
@@ -296,7 +299,7 @@ open class ExpandableBoxState(
             animationSpec: AnimationSpec<Float>,
             confirmStateChange: (ExpandableBoxStateValue) -> Boolean
         ) = Saver<ExpandableBoxState, ExpandableBoxStateValue>(
-            save = { it.currentValue },
+            save = { it.completedValue },
             restore = { ExpandableBoxState(it, animationSpec, confirmStateChange) }
         )
     }

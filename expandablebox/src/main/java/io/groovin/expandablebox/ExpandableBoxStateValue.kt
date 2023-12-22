@@ -1,5 +1,5 @@
 package io.groovin.expandablebox
 
 enum class ExpandableBoxStateValue {
-    HIDE, HIDING, FOLD, FOLDING, EXPAND
+    Fold, Folding, HalfExpand, Expanding, Expand
 }

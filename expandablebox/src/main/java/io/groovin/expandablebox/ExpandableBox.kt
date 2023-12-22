@@ -19,31 +19,32 @@ import androidx.compose.ui.unit.Velocity
 @Composable
 fun ExpandableBox(
     modifier: Modifier = Modifier,
-    isDownDirection: Boolean = true,
-    expandableBoxState: ExpandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.FOLD),
+    swipeDirection: ExpandableBoxSwipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
+    expandableBoxState: ExpandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.Fold),
     foldHeight: Dp,
-    isHideable: Boolean = true,
+    halfExpandHeight: Dp = foldHeight,
+    expandHeight: Dp = Dp.Unspecified,
     content: @Composable ExpandableBoxScope.() -> Unit
 ) {
     BoxWithConstraints(
         modifier = modifier
     ) {
         val density = LocalDensity.current
-        val foldHeightPx = with(density) { foldHeight.toPx() }
-        val maxHeightPx = with(density) { maxHeight.toPx() }
-        val anchors =
-            if (isHideable) {
-                mapOf(
-                    0f to ExpandableBoxStateValue.HIDE,
-                    foldHeightPx to ExpandableBoxStateValue.FOLD,
-                    maxHeightPx to ExpandableBoxStateValue.EXPAND
-                )
-            } else {
-                mapOf(
-                    foldHeightPx to ExpandableBoxStateValue.FOLD,
-                    maxHeightPx to ExpandableBoxStateValue.EXPAND
-                )
-            }
+        val expandHeightPx = with(density) { if (expandHeight != Dp.Unspecified) expandHeight.toPx() else maxHeight.toPx() }
+        val foldHeightPx = with(density) { foldHeight.toPx().coerceAtMost(expandHeightPx) }
+        val halfExpandHeightPx = with(density) { halfExpandHeight.toPx().coerceIn(foldHeightPx, expandHeightPx) }
+        val anchors = if (foldHeight == halfExpandHeight) {
+            mapOf(
+                foldHeightPx to ExpandableBoxStateValue.Fold,
+                expandHeightPx to ExpandableBoxStateValue.Expand
+            )
+        } else {
+            mapOf(
+                foldHeightPx to ExpandableBoxStateValue.Fold,
+                halfExpandHeightPx to ExpandableBoxStateValue.HalfExpand,
+                expandHeightPx to ExpandableBoxStateValue.Expand
+            )
+        }
 
         val nestedScrollConnection = remember {
             object : NestedScrollConnection {
@@ -58,8 +59,8 @@ fun ExpandableBox(
 
                 override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
                     val delta = available.y
-                    val progressState = expandableBoxState.getProgressState(foldHeightPx, maxHeightPx)
-                    return if (source == NestedScrollSource.Drag || progressState != ExpandableBoxStateValue.EXPAND) {
+                    val progressState = expandableBoxState.progressValue
+                    return if (source == NestedScrollSource.Drag || progressState != ExpandableBoxStateValue.Expand) {
                         Offset(0f, -expandableBoxState.performDrag(-delta))
                     } else {
                         super.onPostScroll(consumed, available, source)
@@ -75,13 +76,14 @@ fun ExpandableBox(
                 }
             }
         }
+        val isDownDirection = remember(swipeDirection) { swipeDirection == ExpandableBoxSwipeDirection.SwipeUpToExpand }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .expandableBoxSwipeable(
                     state = expandableBoxState,
                     anchors = anchors,
-                    enabled = expandableBoxState.currentValue != ExpandableBoxStateValue.HIDE,
+                    enabled = foldHeightPx > 0 || expandableBoxState.completedValue != ExpandableBoxStateValue.Fold,
                     orientation = Orientation.Vertical,
                     reverseDirection = isDownDirection,
                     thresholds = { _, _ -> FractionalThreshold(0.7f) },
@@ -95,16 +97,17 @@ fun ExpandableBox(
                     .fillMaxWidth()
                     .height(innerHeightDp)
             ) {
-                val progressState = expandableBoxState.getProgressState(foldHeightPx, maxHeightPx)
-                val progress = if (progressState == ExpandableBoxStateValue.HIDE || progressState == ExpandableBoxStateValue.HIDING) {
-                    if (foldHeightPx != 0f) {
-                        (expandableBoxState.offset.value / (foldHeightPx)).coerceIn(0f, 1f)
+                expandableBoxState.updateProgressState(foldHeightPx, halfExpandHeightPx, expandHeightPx)
+                val progressState = expandableBoxState.progressValue
+                val progress = if (progressState == ExpandableBoxStateValue.Fold || progressState == ExpandableBoxStateValue.Folding) {
+                    if (halfExpandHeightPx != 0f) {
+                        (expandableBoxState.offset.value / (halfExpandHeightPx)).coerceIn(0f, 1f)
                     } else {
                         1f
                     }
                 } else {
-                    if (maxHeightPx != foldHeightPx) {
-                        ((expandableBoxState.offset.value - foldHeightPx) / (maxHeightPx - foldHeightPx)).coerceIn(0f, 1f)
+                    if (expandHeightPx != halfExpandHeightPx) {
+                        ((expandableBoxState.offset.value - halfExpandHeightPx) / (expandHeightPx - halfExpandHeightPx)).coerceIn(0f, 1f)
                     } else {
                         1f
                     }
@@ -112,7 +115,7 @@ fun ExpandableBox(
                 ExpandableBoxScope(
                     progress,
                     progressState,
-                    expandableBoxState.currentValue,
+                    expandableBoxState.completedValue,
                     this
                 ).content()
             }
@@ -120,12 +123,20 @@ fun ExpandableBox(
     }
 }
 
-private fun ExpandableBoxState.getProgressState(foldHeightPx: Float, maxHeightPx: Float): ExpandableBoxStateValue {
-    return when {
-        offset.value <= 0 -> ExpandableBoxStateValue.HIDE
-        offset.value < foldHeightPx -> ExpandableBoxStateValue.HIDING
-        offset.value == foldHeightPx -> ExpandableBoxStateValue.FOLD
-        offset.value > foldHeightPx && offset.value < maxHeightPx -> ExpandableBoxStateValue.FOLDING
-        else -> ExpandableBoxStateValue.EXPAND
+private fun ExpandableBoxState.updateProgressState(foldHeightPx: Float, halfExpandHeightPx: Float, expandHeightPx: Float) {
+    progressValue = if (foldHeightPx == halfExpandHeightPx) {
+        when {
+            offset.value <= foldHeightPx -> ExpandableBoxStateValue.Fold
+            offset.value > foldHeightPx && offset.value < expandHeightPx -> ExpandableBoxStateValue.Expanding
+            else -> ExpandableBoxStateValue.Expand
+        }
+    } else {
+        when {
+            offset.value <= foldHeightPx -> ExpandableBoxStateValue.Fold
+            offset.value < halfExpandHeightPx -> ExpandableBoxStateValue.Folding
+            offset.value == halfExpandHeightPx -> ExpandableBoxStateValue.HalfExpand
+            offset.value > halfExpandHeightPx && offset.value < expandHeightPx -> ExpandableBoxStateValue.Expanding
+            else -> ExpandableBoxStateValue.Expand
+        }
     }
 }

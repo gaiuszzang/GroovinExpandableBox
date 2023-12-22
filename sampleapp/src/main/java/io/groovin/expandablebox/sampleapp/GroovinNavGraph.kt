@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import io.groovin.expandablebox.sampleapp.article.ArticleSampleScreen
+import io.groovin.expandablebox.sampleapp.map.MapSampleScreen
 import io.groovin.expandablebox.sampleapp.music.MusicSampleScreen
 
 
@@ -19,6 +20,7 @@ object GroovinDestination {
     const val MusicBottomExpandBox = "MusicBottomExpandBox"
     const val MusicUpExpandBox     = "MusicUpExpandBox"
     const val ArticleExpandBox     = "ArticleExpandBox"
+    const val MapExpandBox         = "MapExpandBox"
 }
 
 val LocalNavAction = compositionLocalOf<GroovinAction> { error("can't find GroovinAction") }
@@ -61,6 +63,9 @@ fun GroovinNavGraph(
         composable(GroovinDestination.ArticleExpandBox) {
             ArticleSampleScreen()
         }
+        composable(GroovinDestination.MapExpandBox) {
+            MapSampleScreen()
+        }
     }
 }
 
@@ -73,6 +78,9 @@ class GroovinAction(private val navController: NavHostController?) {
     }
     val moveToArticleExpandBox: () -> Unit = {
         navController?.navigate(GroovinDestination.ArticleExpandBox)
+    }
+    val moveToMapExpandBox: () -> Unit = {
+        navController?.navigate(GroovinDestination.MapExpandBox)
     }
     val moveToBack: () -> Unit = {
         navController?.popBackStack()

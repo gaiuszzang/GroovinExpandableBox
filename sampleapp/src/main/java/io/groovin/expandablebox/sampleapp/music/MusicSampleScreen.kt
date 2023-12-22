@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
 import io.groovin.expandablebox.ExpandableBoxStateValue
+import io.groovin.expandablebox.ExpandableBoxSwipeDirection
 import io.groovin.expandablebox.rememberExpandableBoxState
 import io.groovin.expandablebox.sampleapp.ui.theme.Pink80
 import kotlinx.coroutines.launch
@@ -37,17 +38,17 @@ fun MusicSampleScreen(
     val coroutineScope = rememberCoroutineScope()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
-    val foldHeight = remember { 100.dp }
+    val minimizedHeight = remember { 100.dp }
     Box(modifier = Modifier.fillMaxSize()) {
         val swipeableState = rememberExpandableBoxState(
-            initialValue = ExpandableBoxStateValue.FOLD
+            initialValue = ExpandableBoxStateValue.HalfExpand
         )
         MusicListScreen(
             onItemClick = { index ->
                 selectedItemIndex = index
-                if (swipeableState.currentValue == ExpandableBoxStateValue.HIDE) {
+                if (swipeableState.completedValue == ExpandableBoxStateValue.Fold) {
                     coroutineScope.launch {
-                        swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
+                        swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
                     }
                 }
             }
@@ -57,19 +58,20 @@ fun MusicSampleScreen(
                 .align(if (isUpside) Alignment.TopCenter else Alignment.BottomCenter)
                 .fillMaxWidth(),
             expandableBoxState = swipeableState,
-            isDownDirection = !isUpside,
-            foldHeight = foldHeight
+            swipeDirection = if (isUpside) ExpandableBoxSwipeDirection.SwipeDownToExpand else ExpandableBoxSwipeDirection.SwipeUpToExpand,
+            foldHeight = 0.dp,
+            halfExpandHeight = minimizedHeight
         ) {
             MusicPlayerScreen(
                 modifier = Modifier.background(MusicPlayerScreenBackgroundColor),
                 selectedItemIndex = selectedItemIndex,
                 progress = progress,
                 progressState = progressState,
-                foldHeight = foldHeight,
+                minimizedHeight = minimizedHeight,
                 isUpside = isUpside,
                 foldClick = {
                     coroutineScope.launch {
-                        swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
+                        swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
                     }
                 },
                 playClick = {
@@ -78,10 +80,10 @@ fun MusicSampleScreen(
             )
             SyncStatusBarColor(progressState, colorScheme.background)
             BackHandler(
-                enabled = (completedState == ExpandableBoxStateValue.EXPAND)
+                enabled = (completedState == ExpandableBoxStateValue.Expand)
             ) {
                 coroutineScope.launch {
-                    swipeableState.animateTo(ExpandableBoxStateValue.FOLD)
+                    swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
                 }
             }
         }
@@ -97,7 +99,7 @@ private fun SyncStatusBarColor(
     val view = LocalView.current
     LaunchedEffect(expandableBoxState) {
         val window = (view.context as Activity).window
-        if (expandableBoxState == ExpandableBoxStateValue.EXPAND) {
+        if (expandableBoxState == ExpandableBoxStateValue.Expand) {
             window.statusBarColor = expandColor.toArgb()
         } else {
             window.statusBarColor = defaultColor.toArgb()

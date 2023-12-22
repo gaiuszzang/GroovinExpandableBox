@@ -36,12 +36,12 @@ fun MusicPlayerScreen(
     selectedItemIndex: Int,
     progress: Float,
     progressState: ExpandableBoxStateValue,
-    foldHeight: Dp,
+    minimizedHeight: Dp,
     isUpside: Boolean,
     foldClick: () -> Unit,
     playClick: () -> Unit
 ) {
-    val constraintSets = remember(progressState) { getConstraintSets(progressState, if (isUpside) -foldHeight else foldHeight) }
+    val constraintSets = remember(progressState) { getConstraintSets(progressState, if (isUpside) -minimizedHeight else minimizedHeight) }
     MotionLayout(
         start = constraintSets.first,
         end = constraintSets.second,
@@ -51,8 +51,8 @@ fun MusicPlayerScreen(
             .fillMaxSize()
             .then(modifier)
     ) {
-        val imagePadding = if (progressState != ExpandableBoxStateValue.HIDE && progressState != ExpandableBoxStateValue.HIDING) ((progress * 10) + 10).dp else 10.dp
-        val cornerRadius = if (progressState != ExpandableBoxStateValue.HIDE && progressState != ExpandableBoxStateValue.HIDING) ((progress * 10) + 8).dp else 8.dp
+        val imagePadding = if (progressState != ExpandableBoxStateValue.Fold && progressState != ExpandableBoxStateValue.Folding) ((progress * 10) + 10).dp else 10.dp
+        val cornerRadius = if (progressState != ExpandableBoxStateValue.Fold && progressState != ExpandableBoxStateValue.Folding) ((progress * 10) + 8).dp else 8.dp
         IconButton(
             modifier = Modifier
                 .layoutId("foldButton"),
@@ -93,14 +93,14 @@ fun MusicPlayerScreen(
 
 private fun getConstraintSets(state: ExpandableBoxStateValue, foldHeight: Dp) : Pair<ConstraintSet, ConstraintSet> {
     return when(state) {
-        ExpandableBoxStateValue.HIDE, ExpandableBoxStateValue.HIDING -> Pair(hideConstraintSet(foldHeight), foldConstraintSet())
+        ExpandableBoxStateValue.Fold, ExpandableBoxStateValue.Folding -> Pair(hideConstraintSet(foldHeight), foldConstraintSet())
         else -> Pair(foldConstraintSet(), expandConstraintSet())
     }
 }
 
 private fun getTransition(state: ExpandableBoxStateValue): Transition? {
     return when(state) {
-        ExpandableBoxStateValue.HIDE, ExpandableBoxStateValue.HIDING -> null
+        ExpandableBoxStateValue.Fold, ExpandableBoxStateValue.Folding -> null
         else -> foldExpandTransition()
     }
 }
