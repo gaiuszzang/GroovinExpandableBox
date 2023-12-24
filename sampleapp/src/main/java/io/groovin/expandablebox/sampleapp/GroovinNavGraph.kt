@@ -10,7 +10,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import io.groovin.expandablebox.sampleapp.article.ArticleSampleScreen
+import io.groovin.expandablebox.sampleapp.map.MapNestedScrollOption
 import io.groovin.expandablebox.sampleapp.map.MapSampleScreen
 import io.groovin.expandablebox.sampleapp.music.MusicSampleScreen
 
@@ -63,8 +65,15 @@ fun GroovinNavGraph(
         composable(GroovinDestination.ArticleExpandBox) {
             ArticleSampleScreen()
         }
-        composable(GroovinDestination.MapExpandBox) {
-            MapSampleScreen()
+        composable(
+            route = "${GroovinDestination.MapExpandBox}?" +
+                "nestedScrollOption={nestedScrollOption}",
+            arguments = listOf(
+                navArgument("nestedScrollOption") { defaultValue = 0 }
+            )
+        ) {
+            val nestedScrollOption = it.arguments?.getInt("nestedScrollOption", 0) ?: 0
+            MapSampleScreen(MapNestedScrollOption.from(nestedScrollOption))
         }
     }
 }
@@ -79,8 +88,8 @@ class GroovinAction(private val navController: NavHostController?) {
     val moveToArticleExpandBox: () -> Unit = {
         navController?.navigate(GroovinDestination.ArticleExpandBox)
     }
-    val moveToMapExpandBox: () -> Unit = {
-        navController?.navigate(GroovinDestination.MapExpandBox)
+    val moveToMapExpandBox: (Int) -> Unit = { nestedScrollOption ->
+        navController?.navigate(GroovinDestination.MapExpandBox + "?nestedScrollOption=$nestedScrollOption")
     }
     val moveToBack: () -> Unit = {
         navController?.popBackStack()

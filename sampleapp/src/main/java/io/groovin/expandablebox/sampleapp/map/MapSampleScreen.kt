@@ -45,9 +45,10 @@ import io.groovin.expandablebox.sampleapp.R
 import io.groovin.expandablebox.sampleapp.ui.theme.Purple40
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun MapSampleScreen() {
+fun MapSampleScreen(
+    nestedScrollOption: MapNestedScrollOption
+) {
     val coroutineScope = rememberCoroutineScope()
     val hideHeight = remember { 96.dp }
     val foldHeight = remember { 300.dp }
@@ -115,7 +116,13 @@ fun MapSampleScreen() {
         val contentScrollState = rememberScrollState()
         val nestedScrollEnabled by remember {
             derivedStateOf {
-                swipeableState.completedValue != ExpandableBoxStateValue.Expand
+                when (nestedScrollOption) {
+                    MapNestedScrollOption.Use -> true
+                    MapNestedScrollOption.Disable -> false
+                    MapNestedScrollOption.ConditionalUse -> {
+                        swipeableState.completedValue != ExpandableBoxStateValue.Expand
+                    }
+                }
             }
         }
         LaunchedEffect(swipeableState.completedValue) {
@@ -173,6 +180,20 @@ fun MapSampleScreen() {
     }
 }
 
+enum class MapNestedScrollOption {
+    Use, ConditionalUse, Disable;
+
+    companion object {
+        fun from(value: Int): MapNestedScrollOption {
+            return when (value) {
+                0 -> Use
+                1 -> ConditionalUse
+                2 -> Disable
+                else -> Use
+            }
+        }
+    }
+}
 
 private inline fun Modifier.conditional(
     condition: Boolean,
