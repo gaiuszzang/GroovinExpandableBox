@@ -24,6 +24,7 @@ fun ExpandableBox(
     foldHeight: Dp,
     halfExpandHeight: Dp = foldHeight,
     expandHeight: Dp = Dp.Unspecified,
+    nestedScrollEnabled: Boolean = true,
     content: @Composable ExpandableBoxScope.() -> Unit
 ) {
     BoxWithConstraints(
@@ -46,9 +47,10 @@ fun ExpandableBox(
             )
         }
 
-        val nestedScrollConnection = remember {
+        val nestedScrollConnection = remember(nestedScrollEnabled) {
             object : NestedScrollConnection {
                 override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                    if (!nestedScrollEnabled) return super.onPreScroll(available, source)
                     val delta = available.y
                     return if (delta < 0) {
                         Offset(0f, -expandableBoxState.performDrag(-delta))
@@ -58,6 +60,7 @@ fun ExpandableBox(
                 }
 
                 override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+                    if (!nestedScrollEnabled) return super.onPostScroll(consumed, available, source)
                     val delta = available.y
                     val progressState = expandableBoxState.progressValue
                     return if (source == NestedScrollSource.Drag || progressState != ExpandableBoxStateValue.Expand) {
@@ -71,6 +74,7 @@ fun ExpandableBox(
                     consumed: Velocity,
                     available: Velocity
                 ): Velocity {
+                    if (!nestedScrollEnabled) return super.onPostFling(consumed, available)
                     expandableBoxState.performFling(velocity = available.y)
                     return super.onPostFling(consumed, available)
                 }
@@ -90,6 +94,9 @@ fun ExpandableBox(
                     resistance = ExpandableBoxSwipeableDefaults.resistanceConfig(anchors.keys, 0f, 0f) //Prevent moving animation when over swiping
                 )
                 .nestedScroll(nestedScrollConnection)
+                /*.conditional(nestedScrollEnabled) {
+                    nestedScroll(nestedScrollConnection)
+                }*/
         ) {
             val innerHeightDp = with(density) { (expandableBoxState.offset.value).toDp() }
             Box(

@@ -44,17 +44,19 @@ ExpandableBox(
     expandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.Fold),
     swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
     foldHeight = 100.dp,
-    halfExpandHeight = 300.dp
+    halfExpandHeight = 300.dp,
+    nestedScrollEnabled = true
 ) {
     Content(...)   //Contents Composable
 }
 ```
-There are 4 arguments to be aware of use.
+There are 6 arguments to be aware of use.
  - `expandableBoxState` : ExpandableBox needs ExpandableBoxState for store and use its status. See the section below for details.
  - `swipeDirection` : You can set the Swipe direction for expanding this. `default = SwipeUpToExpand`
  - `foldHeight` : Define the Minimized Height. `Mandatory`
  - `halfExpandHeight` : Define the Half Expanded Height If you want to use Half Expanded State. If not defined, half expanded state is not used. `Optional`
  - `expandHeight` : Define the Fully Expanded Height. The default is `Dp.Unspecified`, which sets it to the parent's maximum height. `Optional`
+ - `nestedScrollEnabled` : You can enable nested scrolling to allowing seamless swipe gesture with scrollable composable like Column or LazyColumn. `default = true`
 
 
 #### ExpandableBoxState

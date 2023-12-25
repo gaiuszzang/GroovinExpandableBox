@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.FloatingActionButton
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,9 +45,10 @@ import io.groovin.expandablebox.sampleapp.R
 import io.groovin.expandablebox.sampleapp.ui.theme.Purple40
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun MapSampleScreen() {
+fun MapSampleScreen(
+    nestedScrollOption: MapNestedScrollOption
+) {
     val coroutineScope = rememberCoroutineScope()
     val hideHeight = remember { 96.dp }
     val foldHeight = remember { 300.dp }
@@ -110,7 +113,23 @@ fun MapSampleScreen() {
                 )
             }
         }
-
+        val contentScrollState = rememberScrollState()
+        val nestedScrollEnabled by remember {
+            derivedStateOf {
+                when (nestedScrollOption) {
+                    MapNestedScrollOption.Use -> true
+                    MapNestedScrollOption.Disable -> false
+                    MapNestedScrollOption.ConditionalUse -> {
+                        swipeableState.completedValue != ExpandableBoxStateValue.Expand
+                    }
+                }
+            }
+        }
+        LaunchedEffect(swipeableState.completedValue) {
+            if (swipeableState.completedValue != ExpandableBoxStateValue.Expand) {
+                contentScrollState.scrollTo(0)
+            }
+        }
         // Expandable Box
         ExpandableBox(
             modifier = Modifier
@@ -119,7 +138,8 @@ fun MapSampleScreen() {
             expandableBoxState = swipeableState,
             swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
             foldHeight = hideHeight,
-            halfExpandHeight = foldHeight
+            halfExpandHeight = foldHeight,
+            nestedScrollEnabled = nestedScrollEnabled
         ) {
             Column(
                 modifier = Modifier
@@ -140,13 +160,15 @@ fun MapSampleScreen() {
                 MapBottomSheetScreen(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    scrollState = contentScrollState
                 )
             }
             BackHandler(
                 enabled = (completedState != ExpandableBoxStateValue.Fold)
             ) {
                 coroutineScope.launch {
+                    contentScrollState.scrollTo(0)
                     if (completedState == ExpandableBoxStateValue.Expand) {
                         swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
                     } else {
@@ -158,6 +180,20 @@ fun MapSampleScreen() {
     }
 }
 
+enum class MapNestedScrollOption {
+    Use, ConditionalUse, Disable;
+
+    companion object {
+        fun from(value: Int): MapNestedScrollOption {
+            return when (value) {
+                0 -> Use
+                1 -> ConditionalUse
+                2 -> Disable
+                else -> Use
+            }
+        }
+    }
+}
 
 private inline fun Modifier.conditional(
     condition: Boolean,
