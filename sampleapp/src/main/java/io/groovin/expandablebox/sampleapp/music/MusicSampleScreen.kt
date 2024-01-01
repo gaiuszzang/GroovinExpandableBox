@@ -40,15 +40,15 @@ fun MusicSampleScreen(
     val context = LocalContext.current
     val minimizedHeight = remember { 100.dp }
     Box(modifier = Modifier.fillMaxSize()) {
-        val swipeableState = rememberExpandableBoxState(
+        val expandableBoxState = rememberExpandableBoxState(
             initialValue = ExpandableBoxStateValue.HalfExpand
         )
         MusicListScreen(
             onItemClick = { index ->
                 selectedItemIndex = index
-                if (swipeableState.completedValue == ExpandableBoxStateValue.Fold) {
+                if (expandableBoxState.completedValue == ExpandableBoxStateValue.Fold) {
                     coroutineScope.launch {
-                        swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
+                        expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
                     }
                 }
             }
@@ -57,7 +57,7 @@ fun MusicSampleScreen(
             modifier = Modifier
                 .align(if (isUpside) Alignment.TopCenter else Alignment.BottomCenter)
                 .fillMaxWidth(),
-            expandableBoxState = swipeableState,
+            expandableBoxState = expandableBoxState,
             swipeDirection = if (isUpside) ExpandableBoxSwipeDirection.SwipeDownToExpand else ExpandableBoxSwipeDirection.SwipeUpToExpand,
             foldHeight = 0.dp,
             halfExpandHeight = minimizedHeight
@@ -71,7 +71,7 @@ fun MusicSampleScreen(
                 isUpside = isUpside,
                 foldClick = {
                     coroutineScope.launch {
-                        swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
+                        expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
                     }
                 },
                 playClick = {
@@ -83,7 +83,7 @@ fun MusicSampleScreen(
                 enabled = (completedState == ExpandableBoxStateValue.Expand)
             ) {
                 coroutineScope.launch {
-                    swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
+                    expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
                 }
             }
         }

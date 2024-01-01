@@ -35,7 +35,7 @@ fun ArticleSampleScreen() {
     val articleList = remember { getArticleList() }
     var selectedArticle by remember { mutableStateOf(articleList[0]) }
     Box(modifier = Modifier.fillMaxSize()) {
-        val swipeableState = rememberExpandableBoxState(
+        val expandableBoxState = rememberExpandableBoxState(
             initialValue = ExpandableBoxStateValue.Fold
         )
         ArticleContentScreen(
@@ -51,7 +51,7 @@ fun ArticleSampleScreen() {
                 .padding(top = 100.dp)
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(color = Pink80),
-            expandableBoxState = swipeableState,
+            expandableBoxState = expandableBoxState,
             swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
             foldHeight = remember { 200.dp }
         ) {
@@ -73,7 +73,7 @@ fun ArticleSampleScreen() {
                     onItemClick = {
                         selectedArticle = it
                         coroutineScope.launch {
-                            swipeableState.animateTo(ExpandableBoxStateValue.Fold)
+                            expandableBoxState.animateTo(ExpandableBoxStateValue.Fold)
                         }
                     }
                 )
@@ -82,7 +82,7 @@ fun ArticleSampleScreen() {
                 enabled = (completedState == ExpandableBoxStateValue.Expand || progressState == ExpandableBoxStateValue.Expand)
             ) {
                 coroutineScope.launch {
-                    swipeableState.animateTo(ExpandableBoxStateValue.Fold)
+                    expandableBoxState.animateTo(ExpandableBoxStateValue.Fold)
                 }
             }
         }

@@ -21,7 +21,6 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,8 +52,17 @@ fun MapSampleScreen(
     val hideHeight = remember { 96.dp }
     val foldHeight = remember { 300.dp }
     Box(modifier = Modifier.fillMaxSize()) {
-        val swipeableState = rememberExpandableBoxState(
-            initialValue = ExpandableBoxStateValue.HalfExpand
+        val contentScrollState = rememberScrollState()
+        val expandableBoxState = rememberExpandableBoxState(
+            initialValue = ExpandableBoxStateValue.HalfExpand,
+            confirmStateChange = { newValue ->
+                if (nestedScrollOption != MapNestedScrollOption.Disable && newValue != ExpandableBoxStateValue.Expand) {
+                    coroutineScope.launch {
+                        contentScrollState.scrollTo(0)
+                    }
+                }
+                true
+            }
         )
         // sample map image
         Image(
@@ -66,8 +74,8 @@ fun MapSampleScreen(
         // Search Bar, Location Button UI
         val extraUiVisibility by remember {
             derivedStateOf {
-                (swipeableState.progressValue != ExpandableBoxStateValue.Expanding) &&
-                (swipeableState.progressValue != ExpandableBoxStateValue.Expand)
+                (expandableBoxState.progressValue != ExpandableBoxStateValue.Expanding) &&
+                (expandableBoxState.progressValue != ExpandableBoxStateValue.Expand)
             }
         }
         var searchText by remember { mutableStateOf("") }
@@ -96,7 +104,7 @@ fun MapSampleScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
-                .padding(bottom = (with(density) { swipeableState.offset.value.toDp() }).coerceAtMost(foldHeight)),
+                .padding(bottom = (with(density) { expandableBoxState.offset.value.toDp() }).coerceAtMost(foldHeight)),
             visible = extraUiVisibility,
             enter = fadeIn(),
             exit = fadeOut()
@@ -113,21 +121,16 @@ fun MapSampleScreen(
                 )
             }
         }
-        val contentScrollState = rememberScrollState()
+
         val nestedScrollEnabled by remember {
             derivedStateOf {
                 when (nestedScrollOption) {
                     MapNestedScrollOption.Use -> true
                     MapNestedScrollOption.Disable -> false
                     MapNestedScrollOption.ConditionalUse -> {
-                        swipeableState.completedValue != ExpandableBoxStateValue.Expand
+                        expandableBoxState.completedValue != ExpandableBoxStateValue.Expand
                     }
                 }
-            }
-        }
-        LaunchedEffect(swipeableState.completedValue) {
-            if (swipeableState.completedValue != ExpandableBoxStateValue.Expand) {
-                contentScrollState.scrollTo(0)
             }
         }
         // Expandable Box
@@ -135,7 +138,7 @@ fun MapSampleScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(),
-            expandableBoxState = swipeableState,
+            expandableBoxState = expandableBoxState,
             swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
             foldHeight = hideHeight,
             halfExpandHeight = foldHeight,
@@ -170,9 +173,9 @@ fun MapSampleScreen(
                 coroutineScope.launch {
                     contentScrollState.scrollTo(0)
                     if (completedState == ExpandableBoxStateValue.Expand) {
-                        swipeableState.animateTo(ExpandableBoxStateValue.HalfExpand)
+                        expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
                     } else {
-                        swipeableState.animateTo(ExpandableBoxStateValue.Fold)
+                        expandableBoxState.animateTo(ExpandableBoxStateValue.Fold)
                     }
                 }
             }
