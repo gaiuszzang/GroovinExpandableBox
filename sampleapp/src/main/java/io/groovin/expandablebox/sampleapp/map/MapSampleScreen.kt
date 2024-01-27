@@ -110,7 +110,11 @@ fun MapSampleScreen(
             exit = fadeOut()
         ) {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                    coroutineScope.launch {
+                        expandableBoxState.animateTo(ExpandableBoxStateValue.Fold)
+                    }
+                },
                 backgroundColor = Purple40,
                 elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp)
             ) {
