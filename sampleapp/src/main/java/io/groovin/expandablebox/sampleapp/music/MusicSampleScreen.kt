@@ -80,8 +80,9 @@ fun MusicSampleScreen(
             )
             SyncStatusBarColor(progressState, colorScheme.background)
             BackHandler(
-                enabled = (completedState == ExpandableBoxStateValue.Expand)
+                enabled = (completedState == ExpandableBoxStateValue.Expand) || (expandableBoxState.isAnimationRunning)
             ) {
+                if (expandableBoxState.isAnimationRunning) return@BackHandler
                 coroutineScope.launch {
                     expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
                 }
