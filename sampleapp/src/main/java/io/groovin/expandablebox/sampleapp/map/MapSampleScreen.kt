@@ -14,11 +14,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.FloatingActionButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -115,7 +115,7 @@ fun MapSampleScreen(
                         expandableBoxState.animateTo(ExpandableBoxStateValue.Fold)
                     }
                 },
-                backgroundColor = Purple40,
+                containerColor = Purple40,
                 elevation = FloatingActionButtonDefaults.elevation(0.dp,0.dp)
             ) {
                 Icon(
