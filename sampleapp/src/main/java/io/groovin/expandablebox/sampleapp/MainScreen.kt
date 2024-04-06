@@ -37,18 +37,11 @@ fun MainScreen() {
         ) {
             MainHeader()
             MainItem(
-                text = "Sample 1 : Music Player (Downside)",
+                text = "Sample 1 : Music Player",
                 onClick = {
                     navAction.moveToMusicBottomExpandBox()
                 }
             )
-            MainItem(
-                text = "Sample 2 : Music Player (Upside)",
-                onClick = {
-                    navAction.moveToMusicUpExpandBox()
-                }
-            )
-
             MainItem(
                 text = "Sample 2 : Article Page",
                 onClick = {

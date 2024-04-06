@@ -327,7 +327,7 @@ class ExpandableBoxSwipeProgress(
     }
 
     override fun toString(): String {
-        return "ExpandableBoxSwipeProgress(from=$from, to=$to, fraction=$fromToProgress)"
+        return "ExpandableBoxSwipeProgress(from=$from, to=$to, fromToProgress=$fromToProgress)"
     }
 }
 
