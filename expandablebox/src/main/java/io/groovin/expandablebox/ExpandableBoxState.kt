@@ -404,7 +404,7 @@ internal fun Modifier.expandableBoxSwipeable(
         state.processNewAnchors(oldAnchors, anchors)
     }
 
-    Modifier.draggable(
+    this.draggable(
         orientation = orientation,
         enabled = enabled,
         reverseDirection = reverseDirection,
