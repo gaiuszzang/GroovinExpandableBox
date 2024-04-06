@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
@@ -72,9 +73,9 @@ open class ExpandableBoxState(
     val offset: State<Float> get() = offsetState
     val overflow: State<Float> get() = overflowState
 
-    private val offsetState = mutableStateOf(0f)
-    private val overflowState = mutableStateOf(0f)
-    private val absoluteOffset = mutableStateOf(0f)
+    private val offsetState = mutableFloatStateOf(0f)
+    private val overflowState = mutableFloatStateOf(0f)
+    private val absoluteOffset = mutableFloatStateOf(0f)
     private val animationTarget = mutableStateOf<Float?>(null)
 
     internal var anchors by mutableStateOf(emptyMap<Float, ExpandableBoxStateValue>())
@@ -94,8 +95,8 @@ open class ExpandableBoxState(
             requireNotNull(initialOffset) {
                 "The initial value must have an associated anchor."
             }
-            offsetState.value = initialOffset
-            absoluteOffset.value = initialOffset
+            offsetState.floatValue = initialOffset
+            absoluteOffset.floatValue = initialOffset
         }
     }
 
@@ -150,29 +151,29 @@ open class ExpandableBoxState(
 
     internal var thresholds: (Float, Float) -> Float by mutableStateOf({ _, _ -> 0f })
 
-    internal var velocityThreshold by mutableStateOf(0f)
+    internal var velocityThreshold by mutableFloatStateOf(0f)
 
     internal var resistance: ResistanceConfig? by mutableStateOf(null)
 
     internal val draggableState = DraggableState {
-        val newAbsolute = absoluteOffset.value + it
+        val newAbsolute = absoluteOffset.floatValue + it
         val clamped = newAbsolute.coerceIn(minBound, maxBound)
         val overflow = newAbsolute - clamped
         val resistanceDelta = resistance?.computeResistance(overflow) ?: 0f
-        offsetState.value = clamped + resistanceDelta
-        overflowState.value = overflow
-        absoluteOffset.value = newAbsolute
+        offsetState.floatValue = clamped + resistanceDelta
+        overflowState.floatValue = overflow
+        absoluteOffset.floatValue = newAbsolute
     }
 
     private suspend fun snapInternalToOffset(target: Float) {
         draggableState.drag {
-            dragBy(target - absoluteOffset.value)
+            dragBy(target - absoluteOffset.floatValue)
         }
     }
 
     private suspend fun animateInternalToOffset(target: Float, spec: AnimationSpec<Float>) {
         draggableState.drag {
-            var prevValue = absoluteOffset.value
+            var prevValue = absoluteOffset.floatValue
             animationTarget.value = target
             isAnimationRunning = true
             try {
@@ -206,17 +207,17 @@ open class ExpandableBoxState(
             val bounds = findBounds(offset.value, anchors.keys)
             val from: ExpandableBoxStateValue
             val to: ExpandableBoxStateValue
-            val fraction: Float
+            val fromToProgress: Float
             when (bounds.size) {
                 0 -> {
                     from = completedValue
                     to = completedValue
-                    fraction = 1f
+                    fromToProgress = 1f
                 }
                 1 -> {
                     from = anchors.getValue(bounds[0])
                     to = anchors.getValue(bounds[0])
-                    fraction = 1f
+                    fromToProgress = 1f
                 }
                 else -> {
                     val (a, b) =
@@ -227,10 +228,10 @@ open class ExpandableBoxState(
                         }
                     from = anchors.getValue(a)
                     to = anchors.getValue(b)
-                    fraction = (offset.value - a) / (b - a)
+                    fromToProgress = (offset.value - a) / (b - a)
                 }
             }
-            return ExpandableBoxSwipeProgress(from, to, fraction)
+            return ExpandableBoxSwipeProgress(from, to, fromToProgress)
         }
 
     val direction: Float
@@ -256,7 +257,7 @@ open class ExpandableBoxState(
                 }
                 animateInternalToOffset(targetOffset, anim)
             } finally {
-                val endOffset = absoluteOffset.value
+                val endOffset = absoluteOffset.floatValue
                 val endValue = anchors
                     // fighting rounding error once again, anchor should be as close as 0.5 pixels
                     .filterKeys { anchorOffset -> abs(anchorOffset - endOffset) < 0.5f }
@@ -285,9 +286,9 @@ open class ExpandableBoxState(
     }
 
     fun performDrag(delta: Float): Float {
-        val potentiallyConsumed = absoluteOffset.value + delta
+        val potentiallyConsumed = absoluteOffset.floatValue + delta
         val clamped = potentiallyConsumed.coerceIn(minBound, maxBound)
-        val deltaToConsume = clamped - absoluteOffset.value
+        val deltaToConsume = clamped - absoluteOffset.floatValue
         if (abs(deltaToConsume) > 0) {
             draggableState.dispatchRawDelta(deltaToConsume)
         }
@@ -310,23 +311,23 @@ class ExpandableBoxSwipeProgress(
     val from: ExpandableBoxStateValue,
     val to: ExpandableBoxStateValue,
     /*@FloatRange(from = 0.0, to = 1.0)*/
-    val fraction: Float
+    val fromToProgress: Float
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ExpandableBoxSwipeProgress) return false
-        return !(from != other.from || to != other.to || fraction != other.fraction)
+        return !(from != other.from || to != other.to || fromToProgress != other.fromToProgress)
     }
 
     override fun hashCode(): Int {
         var result = from.hashCode()
         result = 31 * result + (to.hashCode())
-        result = 31 * result + fraction.hashCode()
+        result = 31 * result + fromToProgress.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "ExpandableBoxSwipeProgress(from=$from, to=$to, fraction=$fraction)"
+        return "ExpandableBoxSwipeProgress(from=$from, to=$to, fromToProgress=$fromToProgress)"
     }
 }
 
@@ -404,7 +405,7 @@ internal fun Modifier.expandableBoxSwipeable(
         state.processNewAnchors(oldAnchors, anchors)
     }
 
-    Modifier.draggable(
+    this.draggable(
         orientation = orientation,
         enabled = enabled,
         reverseDirection = reverseDirection,

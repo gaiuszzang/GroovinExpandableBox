@@ -18,11 +18,10 @@ import io.groovin.expandablebox.sampleapp.music.MusicSampleScreen
 
 
 object GroovinDestination {
-    const val Main = "Main"
-    const val MusicBottomExpandBox = "MusicBottomExpandBox"
-    const val MusicUpExpandBox     = "MusicUpExpandBox"
-    const val ArticleExpandBox     = "ArticleExpandBox"
-    const val MapExpandBox         = "MapExpandBox"
+    const val MAIN = "Main"
+    const val MUSIC_SAMPLE = "MusicSample"
+    const val ARTICLE_SAMPLE = "ArticleSample"
+    const val MAP_SAMPLE = "MapSample"
 }
 
 val LocalNavAction = compositionLocalOf<GroovinAction> { error("can't find GroovinAction") }
@@ -33,7 +32,7 @@ fun GroovinNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = GroovinDestination.Main,
+        startDestination = GroovinDestination.MAIN,
         enterTransition = {
             fadeIn(animationSpec = tween(700)) + slideIntoContainer(
                 towards = AnimatedContentTransitionScope.SlideDirection.Companion.Up,
@@ -53,20 +52,17 @@ fun GroovinNavGraph(
             )
         }
     ) {
-        composable(GroovinDestination.Main) {
+        composable(GroovinDestination.MAIN) {
             MainScreen()
         }
-        composable(GroovinDestination.MusicBottomExpandBox) {
-            MusicSampleScreen(false)
+        composable(GroovinDestination.MUSIC_SAMPLE) {
+            MusicSampleScreen()
         }
-        composable(GroovinDestination.MusicUpExpandBox) {
-            MusicSampleScreen(true)
-        }
-        composable(GroovinDestination.ArticleExpandBox) {
+        composable(GroovinDestination.ARTICLE_SAMPLE) {
             ArticleSampleScreen()
         }
         composable(
-            route = "${GroovinDestination.MapExpandBox}?" +
+            route = "${GroovinDestination.MAP_SAMPLE}?" +
                 "nestedScrollOption={nestedScrollOption}",
             arguments = listOf(
                 navArgument("nestedScrollOption") { defaultValue = 0 }
@@ -80,16 +76,13 @@ fun GroovinNavGraph(
 
 class GroovinAction(private val navController: NavHostController?) {
     val moveToMusicBottomExpandBox: () -> Unit = {
-        navController?.navigate(GroovinDestination.MusicBottomExpandBox)
-    }
-    val moveToMusicUpExpandBox: () -> Unit = {
-        navController?.navigate(GroovinDestination.MusicUpExpandBox)
+        navController?.navigate(GroovinDestination.MUSIC_SAMPLE)
     }
     val moveToArticleExpandBox: () -> Unit = {
-        navController?.navigate(GroovinDestination.ArticleExpandBox)
+        navController?.navigate(GroovinDestination.ARTICLE_SAMPLE)
     }
     val moveToMapExpandBox: (Int) -> Unit = { nestedScrollOption ->
-        navController?.navigate(GroovinDestination.MapExpandBox + "?nestedScrollOption=$nestedScrollOption")
+        navController?.navigate(GroovinDestination.MAP_SAMPLE + "?nestedScrollOption=$nestedScrollOption")
     }
     val moveToBack: () -> Unit = {
         navController?.popBackStack()

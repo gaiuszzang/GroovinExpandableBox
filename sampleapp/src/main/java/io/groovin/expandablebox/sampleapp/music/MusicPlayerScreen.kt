@@ -37,11 +37,10 @@ fun MusicPlayerScreen(
     progress: Float,
     progressState: ExpandableBoxStateValue,
     minimizedHeight: Dp,
-    isUpside: Boolean,
     foldClick: () -> Unit,
     playClick: () -> Unit
 ) {
-    val constraintSets = remember(progressState) { getConstraintSets(progressState, if (isUpside) -minimizedHeight else minimizedHeight) }
+    val constraintSets = remember(progressState) { getConstraintSets(progressState, minimizedHeight) }
     MotionLayout(
         start = constraintSets.first,
         end = constraintSets.second,
@@ -59,7 +58,7 @@ fun MusicPlayerScreen(
             onClick = { foldClick() }
         ) {
             Icon(
-                imageVector = if (isUpside) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = null
             )
         }
@@ -112,8 +111,8 @@ private fun hideConstraintSet(foldHeight: Dp) = ConstraintSet {
     val foldButton = createRefFor("foldButton")
     val playButton = createRefFor("playButton")
     constrain(poster) {
-        width = Dimension.value(80.dp)
-        height = Dimension.value(80.dp)
+        width = Dimension.value(40.dp)
+        height = Dimension.value(40.dp)
         translationY = foldHeight / 2
         start.linkTo(parent.start)
         top.linkTo(parent.top)
@@ -151,8 +150,8 @@ private fun foldConstraintSet() = ConstraintSet {
     val foldButton = createRefFor("foldButton")
     val playButton = createRefFor("playButton")
     constrain(poster) {
-        width = Dimension.value(80.dp)
-        height = Dimension.value(80.dp)
+        width = Dimension.value(60.dp)
+        height = Dimension.value(60.dp)
         start.linkTo(parent.start)
         top.linkTo(parent.top)
         bottom.linkTo(parent.bottom)
