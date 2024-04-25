@@ -60,6 +60,15 @@ afterEvaluate {
                 groupId = 'io.groovin'
                 artifactId = 'groovinexpandablebox'
                 version = '1.2.2'
+                pom.withXml {
+                    def dependenciesNodeList = asNode().dependencyManagement.dependencies
+                    configurations.implementation.allDependencies.each { dependency ->
+                        if (dependency.name != 'unspecified') {
+                            def newNode = new Node(null, "dependency", [groupId: dependency.group, artifactId: dependency.name, version: dependency.version] )
+                            dependenciesNodeList.add(0, newNode)
+                        }
+                    }
+                }
             }
         }
     }
