@@ -238,6 +238,7 @@ open class ExpandableBoxState(
         get() = anchors.getOffset(completedValue)?.let { sign(offset.value - it) } ?: 0f
 
     suspend fun snapTo(targetValue: ExpandableBoxStateValue) {
+        if (!confirmStateChange(targetValue)) return
         latestNonEmptyAnchorsFlow.collect { anchors ->
             val targetOffset = anchors.getOffset(targetValue)
             requireNotNull(targetOffset) {
@@ -249,6 +250,7 @@ open class ExpandableBoxState(
     }
 
     suspend fun animateTo(targetValue: ExpandableBoxStateValue, anim: AnimationSpec<Float> = animationSpec) {
+        if (!confirmStateChange(targetValue)) return
         latestNonEmptyAnchorsFlow.collect { anchors ->
             try {
                 val targetOffset = anchors.getOffset(targetValue)
@@ -279,7 +281,7 @@ open class ExpandableBoxState(
                 velocityThreshold = velocityThreshold
             )
             val targetState = anchors[targetValue]
-            if (targetState != null && confirmStateChange(targetState)) animateTo(targetState)
+            if (targetState != null) animateTo(targetState)
             // If the user vetoed the state change, rollback to the previous state.
             else animateInternalToOffset(lastAnchor, animationSpec)
         }
