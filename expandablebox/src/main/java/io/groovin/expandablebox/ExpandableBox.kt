@@ -15,6 +15,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
+import kotlin.math.round
+
 
 @Composable
 fun ExpandableBox(
@@ -24,6 +26,7 @@ fun ExpandableBox(
     foldHeight: Dp,
     halfExpandHeight: Dp = foldHeight,
     expandHeight: Dp = Dp.Unspecified,
+    swipeGestureEnabled: Boolean = true,
     nestedScrollEnabled: Boolean = true,
     content: @Composable ExpandableBoxScope.() -> Unit
 ) {
@@ -87,7 +90,7 @@ fun ExpandableBox(
                 .expandableBoxSwipeable(
                     state = expandableBoxState,
                     anchors = anchors,
-                    enabled = foldHeightPx > 0 || expandableBoxState.completedValue != ExpandableBoxStateValue.Fold,
+                    enabled = swipeGestureEnabled && foldHeightPx > 0 || expandableBoxState.completedValue != ExpandableBoxStateValue.Fold,
                     orientation = Orientation.Vertical,
                     reverseDirection = isDownDirection,
                     thresholds = { _, _ -> FractionalThreshold(0.7f) },
@@ -95,7 +98,7 @@ fun ExpandableBox(
                 )
                 .nestedScroll(nestedScrollConnection)
         ) {
-            val innerHeightDp = with(density) { (expandableBoxState.offset.value).toDp() }
+            val innerHeightDp = with(density) { (expandableBoxState.correctedOffset).toDp() }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -105,13 +108,13 @@ fun ExpandableBox(
                 val progressState = expandableBoxState.progressValue
                 val progress = if (progressState == ExpandableBoxStateValue.Fold || progressState == ExpandableBoxStateValue.Folding) {
                     if (halfExpandHeightPx != 0f) {
-                        (expandableBoxState.offset.value / (halfExpandHeightPx)).coerceIn(0f, 1f)
+                        (expandableBoxState.correctedOffset / (halfExpandHeightPx)).coerceIn(0f, 1f)
                     } else {
                         1f
                     }
                 } else {
                     if (expandHeightPx != halfExpandHeightPx) {
-                        ((expandableBoxState.offset.value - halfExpandHeightPx) / (expandHeightPx - halfExpandHeightPx)).coerceIn(0f, 1f)
+                        ((expandableBoxState.correctedOffset - halfExpandHeightPx) / (expandHeightPx - halfExpandHeightPx)).coerceIn(0f, 1f)
                     } else {
                         1f
                     }
@@ -128,19 +131,23 @@ fun ExpandableBox(
 }
 
 private fun ExpandableBoxState.updateProgressState(foldHeightPx: Float, halfExpandHeightPx: Float, expandHeightPx: Float) {
+    val stateOffset = correctedOffset
     progressValue = if (foldHeightPx == halfExpandHeightPx) {
         when {
-            offset.value <= foldHeightPx -> ExpandableBoxStateValue.Fold
-            offset.value > foldHeightPx && offset.value < expandHeightPx -> ExpandableBoxStateValue.Expanding
+            stateOffset <= foldHeightPx -> ExpandableBoxStateValue.Fold
+            stateOffset > foldHeightPx && stateOffset < expandHeightPx -> ExpandableBoxStateValue.Expanding
             else -> ExpandableBoxStateValue.Expand
         }
     } else {
         when {
-            offset.value <= foldHeightPx -> ExpandableBoxStateValue.Fold
-            offset.value < halfExpandHeightPx -> ExpandableBoxStateValue.Folding
-            offset.value == halfExpandHeightPx -> ExpandableBoxStateValue.HalfExpand
-            offset.value > halfExpandHeightPx && offset.value < expandHeightPx -> ExpandableBoxStateValue.Expanding
+            stateOffset <= foldHeightPx -> ExpandableBoxStateValue.Fold
+            stateOffset < halfExpandHeightPx -> ExpandableBoxStateValue.Folding
+            stateOffset == halfExpandHeightPx -> ExpandableBoxStateValue.HalfExpand
+            stateOffset > halfExpandHeightPx && stateOffset < expandHeightPx -> ExpandableBoxStateValue.Expanding
             else -> ExpandableBoxStateValue.Expand
         }
     }
 }
+
+private val ExpandableBoxState.correctedOffset: Float
+    get() = round(offset.value * 1000) / 1000

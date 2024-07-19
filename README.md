@@ -56,6 +56,7 @@ There are 6 arguments to be aware of use.
  - `foldHeight` : Define the Minimized Height. `Mandatory`
  - `halfExpandHeight` : Define the Half Expanded Height If you want to use Half Expanded State. If not defined, half expanded state is not used. `Optional`
  - `expandHeight` : Define the Fully Expanded Height. The default is `Dp.Unspecified`, which sets it to the parent's maximum height. `Optional`
+ - `swipeGestureEnabled` : You can disable swipe gesture. `default = true`
  - `nestedScrollEnabled` : You can enable nested scrolling to allowing seamless swipe gesture with scrollable composable like Column or LazyColumn. `default = true`
 
 
