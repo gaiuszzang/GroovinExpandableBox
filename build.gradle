@@ -2,14 +2,14 @@
 buildscript {
     ext {
         androidx_core_version = '1.13.1'
-        compose_bom_version = '2024.04.00'
+        compose_bom_version = '2024.06.00'
         compose_compiler_version = '1.5.8'
         kotlin_plugin_version = '1.9.22'
     }
 }
 
 plugins {
-    id 'com.android.application' version '8.1.0' apply false
-    id 'com.android.library' version '8.1.0' apply false
+    id 'com.android.application' version '8.1.4' apply false
+    id 'com.android.library' version '8.1.4' apply false
     id 'org.jetbrains.kotlin.android' version "$kotlin_plugin_version" apply false
 }
