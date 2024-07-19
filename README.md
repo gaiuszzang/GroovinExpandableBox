@@ -45,6 +45,7 @@ ExpandableBox(
     swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
     foldHeight = 100.dp,
     halfExpandHeight = 300.dp,
+    swipeGestureEnabled = true,
     nestedScrollEnabled = true
 ) {
     Content(...)   //Contents Composable
