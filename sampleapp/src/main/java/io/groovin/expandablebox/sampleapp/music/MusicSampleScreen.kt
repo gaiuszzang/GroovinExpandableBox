@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
 import io.groovin.expandablebox.ExpandableBoxStateValue
@@ -65,7 +66,8 @@ fun MusicSampleScreen() {
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             ExpandableBox(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .testTag("MusicExpandableBox"),
                 expandableBoxState = expandableBoxState,
                 swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
                 foldHeight = 0.dp,
@@ -73,7 +75,8 @@ fun MusicSampleScreen() {
             ) {
                 expandableProgress.floatValue = this.progress
                 MusicPlayerScreen(
-                    modifier = Modifier.background(MusicPlayerScreenBackgroundColor),
+                    modifier = Modifier
+                        .background(MusicPlayerScreenBackgroundColor),
                     selectedItemIndex = selectedItemIndex,
                     progress = progress,
                     progressState = progressState,

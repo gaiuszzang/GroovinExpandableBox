@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,12 +38,14 @@ fun MainScreen() {
         ) {
             MainHeader()
             MainItem(
+                modifier = Modifier.testTag("MusicPlayerMenu"),
                 text = "Sample 1 : Music Player",
                 onClick = {
                     navAction.moveToMusicBottomExpandBox()
                 }
             )
             MainItem(
+                modifier = Modifier.testTag("ArticlePageMenu"),
                 text = "Sample 2 : Article Page",
                 onClick = {
                     navAction.moveToArticleExpandBox()
@@ -50,6 +53,7 @@ fun MainScreen() {
             )
 
             MainItem(
+                modifier = Modifier.testTag("MapMenu"),
                 text = "Sample 3 : Map",
                 onClick = {
                     isShowMapOptionDialog = true
@@ -127,10 +131,11 @@ private fun MainHeader() {
 @Composable
 private fun MainItem(
     text: String,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable {
                 onClick()
