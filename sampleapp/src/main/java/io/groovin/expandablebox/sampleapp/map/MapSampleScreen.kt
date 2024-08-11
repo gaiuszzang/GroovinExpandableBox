@@ -34,6 +34,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
@@ -141,7 +142,8 @@ fun MapSampleScreen(
         ExpandableBox(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .testTag("MapBottomSheetExpandableBox"),
             expandableBoxState = expandableBoxState,
             swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
             foldHeight = hideHeight,

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.ExperimentalMotionApi
 import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.Transition
 import androidx.constraintlayout.compose.layoutId
@@ -30,6 +30,7 @@ import io.groovin.expandablebox.ExpandableBoxStateValue
 import io.groovin.expandablebox.sampleapp.R
 
 
+@OptIn(ExperimentalMotionApi::class)
 @Composable
 fun MusicPlayerScreen(
     modifier: Modifier = Modifier,
@@ -97,6 +98,7 @@ private fun getConstraintSets(state: ExpandableBoxStateValue, foldHeight: Dp) : 
     }
 }
 
+@OptIn(ExperimentalMotionApi::class)
 private fun getTransition(state: ExpandableBoxStateValue): Transition? {
     return when(state) {
         ExpandableBoxStateValue.Fold, ExpandableBoxStateValue.Folding -> null
@@ -205,6 +207,7 @@ private fun expandConstraintSet() = ConstraintSet {
 
 }
 
+@OptIn(ExperimentalMotionApi::class)
 private fun foldExpandTransition(): Transition {
     return Transition {
         val poster = createRefFor("poster")

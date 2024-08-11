@@ -13,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MusicPlayerBenchmark {
+class ArticlePageBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
@@ -24,29 +24,29 @@ class MusicPlayerBenchmark {
         iterations = 5,
         startupMode = StartupMode.WARM,
         setupBlock = {
-            navigateMusicScreen()
+            navigateArticlePageScreen()
         },
         measureBlock = {
             benchmarkScroll()
         }
     )
 
-    private fun MacrobenchmarkScope.navigateMusicScreen() {
+    private fun MacrobenchmarkScope.navigateArticlePageScreen() {
         pressHome()
         startActivityAndWait()
-        device.wait(Until.hasObject(By.res("MusicPlayerMenu")), 5_000)
-        val menuButton = device.findObject(By.res("MusicPlayerMenu"))
+        device.wait(Until.hasObject(By.res("ArticlePageMenu")), 5_000)
+        val menuButton = device.findObject(By.res("ArticlePageMenu"))
         menuButton.click()
         device.waitForIdle()
     }
 
     private fun MacrobenchmarkScope.benchmarkScroll() {
-        device.wait(Until.hasObject(By.res("MusicExpandableBox")), 5_000)
-        val expandableBox = device.findObject(By.res("MusicExpandableBox"))
+        device.wait(Until.hasObject(By.res("ArticlePageExpandableBox")), 5_000)
+        val expandableBox = device.findObject(By.res("ArticlePageExpandableBox"))
         expandableBox.setGestureMargin(device.displayWidth / 5)
         expandableBox.drag(
             Point(expandableBox.visibleCenter.x, 0),
-            400
+            600
         )
         device.waitForIdle()
     }

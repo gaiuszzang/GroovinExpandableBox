@@ -13,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class MusicPlayerBenchmark {
+class MapBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
@@ -24,29 +24,34 @@ class MusicPlayerBenchmark {
         iterations = 5,
         startupMode = StartupMode.WARM,
         setupBlock = {
-            navigateMusicScreen()
+            navigateArticlePageScreen()
         },
         measureBlock = {
             benchmarkScroll()
         }
     )
 
-    private fun MacrobenchmarkScope.navigateMusicScreen() {
+    private fun MacrobenchmarkScope.navigateArticlePageScreen() {
         pressHome()
         startActivityAndWait()
-        device.wait(Until.hasObject(By.res("MusicPlayerMenu")), 5_000)
-        val menuButton = device.findObject(By.res("MusicPlayerMenu"))
+        device.wait(Until.hasObject(By.res("MapMenu")), 5_000)
+        val menuButton = device.findObject(By.res("MapMenu"))
         menuButton.click()
+        device.waitForIdle()
+
+        device.wait(Until.hasObject(By.res("PopupOkButton")), 5_000)
+        val okButtonButton = device.findObject(By.res("PopupOkButton"))
+        okButtonButton.click()
         device.waitForIdle()
     }
 
     private fun MacrobenchmarkScope.benchmarkScroll() {
-        device.wait(Until.hasObject(By.res("MusicExpandableBox")), 5_000)
-        val expandableBox = device.findObject(By.res("MusicExpandableBox"))
+        device.wait(Until.hasObject(By.res("MapBottomSheetExpandableBox")), 5_000)
+        val expandableBox = device.findObject(By.res("MapBottomSheetExpandableBox"))
         expandableBox.setGestureMargin(device.displayWidth / 5)
         expandableBox.drag(
             Point(expandableBox.visibleCenter.x, 0),
-            400
+            600
         )
         device.waitForIdle()
     }
