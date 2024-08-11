@@ -12,14 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GroovinExpandableBox"
         tools:targetApi="31">
+        <profileable
+            android:shell="true"
+            tools:targetApi="29" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.GroovinExpandableBox"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.GroovinExpandableBox"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

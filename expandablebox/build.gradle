@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'io.groovin.expandablebox'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         minSdk 24
-        targetSdk 34
+        targetSdk 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -59,10 +59,10 @@ afterEvaluate {
                 from components.release
                 groupId = 'io.groovin'
                 artifactId = 'groovinexpandablebox'
-                version = '1.2.4'
+                version = '1.2.5'
             }
         }
     }
 }
 
-group = 'com.github.gaiuszzang'
+group = 'io.groovin'

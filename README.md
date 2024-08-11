@@ -1,5 +1,5 @@
 ## GroovinExpandableBox
-[![Release](https://jitpack.io/v/gaiuszzang/GroovinExpandableBox.svg)](https://jitpack.io/#gaiuszzang/GroovinExpandableBox)  
+[![Release](https://jitpack.io/v/io.groovin/GroovinExpandableBox.svg)](https://jitpack.io/#io.groovin/GroovinExpandableBox)  
 This library offers a Box Composable that can be expanded/reduced through up/down swipe gestures.
 
 |                                                                    MusicPlayer Sample                                                                     |                                                                    Article Page Sample                                                                    |                                                                    Map Sample                                                                     |
@@ -18,19 +18,11 @@ dependencyResolutionManagement {
     }
 }
 ```
-for old gradle version, Add below codes to **your project**'s `build.gradle`.
-```gradle
-allprojects {
-    repositories {
-        maven { url "https://jitpack.io" }
-    }
-}
-```
 
 And add a dependency code to your **module**'s `build.gradle` file.
 ```gradle
 dependencies {
-    implementation 'com.github.gaiuszzang:GroovinExpandableBox:x.x.x'
+    implementation 'io.groovin:GroovinExpandableBox:x.x.x'
 }
 ```
 

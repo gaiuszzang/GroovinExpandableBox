@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
 import io.groovin.expandablebox.ExpandableBoxStateValue
@@ -50,7 +51,8 @@ fun ArticleSampleScreen() {
                 .fillMaxWidth()
                 .padding(top = 100.dp)
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                .background(color = Pink80),
+                .background(color = Pink80)
+                .testTag("ArticlePageExpandableBox"),
             expandableBoxState = expandableBoxState,
             swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
             foldHeight = remember { 200.dp }

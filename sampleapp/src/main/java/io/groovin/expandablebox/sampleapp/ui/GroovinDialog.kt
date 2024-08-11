@@ -1,5 +1,6 @@
 package io.groovin.expandablebox.sampleapp.ui
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,7 +11,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +41,7 @@ fun GroovinDialog(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GroovinOkayCancelDialog(
     showOkayButton: Boolean = true,
@@ -52,7 +58,12 @@ fun GroovinOkayCancelDialog(
         cancelable = cancelable,
         onDismiss = onCancelClick
     ) {
-        Column(modifier = Modifier.padding(16.dp, 10.dp, 16.dp, 10.dp)) {
+        Column(modifier = Modifier
+            .padding(16.dp, 10.dp, 16.dp, 10.dp)
+            .semantics {
+                testTagsAsResourceId = true
+            }
+        ) {
             if (title != null) {
                 Row(
                     modifier = Modifier.padding(0.dp, 6.dp, 0.dp, 6.dp)
@@ -105,6 +116,7 @@ fun GroovinOkayCancelDialog(
                                     end.linkTo(parent.end)
                                 }
                                 .fillMaxWidth(if (showCancelButton) 0.5f else 1f)
+                                .testTag("PopupOkButton")
                         ) {
                             Text(
                                 fontSize = 14.sp,

@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'io.groovin.expandablebox.sampleapp'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "io.groovin.expandablebox.sampleapp"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -24,6 +24,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        benchmark {
+            initWith release
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            debuggable false
         }
     }
     compileOptions {
@@ -63,18 +69,18 @@ dependencies {
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.ui:ui-util"
     implementation "androidx.compose.ui:ui-tooling-preview"
-    implementation "androidx.activity:activity-compose:1.9.0"
+    implementation "androidx.activity:activity-compose:1.9.1"
     implementation "androidx.navigation:navigation-compose:2.7.7"
     debugImplementation "androidx.compose.ui:ui-tooling"
 
     //Lifecycle
-    def lifecycle_version = '2.8.2'
+    def lifecycle_version = '2.8.4'
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
 
     //ConstraintLayout
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha14"
 
     //GroovinExpandableBox
     implementation project(path: ':expandablebox')
