@@ -102,7 +102,8 @@ open class ExpandableBoxState(
 
     internal suspend fun processNewAnchors(
         oldAnchors: Map<Float, ExpandableBoxStateValue>,
-        newAnchors: Map<Float, ExpandableBoxStateValue>
+        newAnchors: Map<Float, ExpandableBoxStateValue>,
+        newAnchorsWithAnimated: Boolean = true
     ) {
         if (oldAnchors.isEmpty()) {
             // If this is the first time that we receive anchors, then we need to initialise
@@ -137,7 +138,11 @@ open class ExpandableBoxState(
                     .keys.minByOrNull { abs(it - offset.value) }!!
             }
             try {
-                animateInternalToOffset(targetOffset, animationSpec)
+                if (newAnchorsWithAnimated) {
+                    animateInternalToOffset(targetOffset, animationSpec)
+                } else {
+                    snapInternalToOffset(targetOffset)
+                }
             } catch (c: CancellationException) {
                 // If the animation was interrupted for any reason, snap as a last resort.
                 snapInternalToOffset(targetOffset)
@@ -190,7 +195,6 @@ open class ExpandableBoxState(
 
     val targetValue: ExpandableBoxStateValue
         get() {
-            // TODO(calintat): Track current velocity (b/149549482) and use that here.
             val target = animationTarget.value ?: computeTarget(
                 offset = offset.value,
                 lastValue = anchors.getOffset(completedValue) ?: offset.value,
@@ -369,7 +373,8 @@ internal fun Modifier.expandableBoxSwipeable(
     interactionSource: MutableInteractionSource? = null,
     thresholds: (from: ExpandableBoxStateValue, to: ExpandableBoxStateValue) -> ThresholdConfig = { _, _ -> FixedThreshold(56.dp) },
     resistance: ResistanceConfig? = resistanceConfig(anchors.keys),
-    velocityThreshold: Dp = VelocityThreshold
+    velocityThreshold: Dp = VelocityThreshold,
+    newAnchorsWithAnimated: Boolean = true
 ) = composed(
     inspectorInfo = debugInspectorInfo {
         name = "expandableBoxSwipeable"
@@ -404,7 +409,7 @@ internal fun Modifier.expandableBoxSwipeable(
         with(density) {
             state.velocityThreshold = velocityThreshold.toPx()
         }
-        state.processNewAnchors(oldAnchors, anchors)
+        state.processNewAnchors(oldAnchors, anchors, newAnchorsWithAnimated)
     }
 
     this.draggable(

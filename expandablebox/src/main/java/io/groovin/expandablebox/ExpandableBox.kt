@@ -28,6 +28,7 @@ fun ExpandableBox(
     expandHeight: Dp = Dp.Unspecified,
     swipeGestureEnabled: Boolean = true,
     nestedScrollEnabled: Boolean = true,
+    newAnchorsWithAnimated: Boolean = true,
     content: @Composable ExpandableBoxScope.() -> Unit
 ) {
     BoxWithConstraints(
@@ -94,7 +95,8 @@ fun ExpandableBox(
                     orientation = Orientation.Vertical,
                     reverseDirection = isDownDirection,
                     thresholds = { _, _ -> FractionalThreshold(0.7f) },
-                    resistance = ExpandableBoxSwipeableDefaults.resistanceConfig(anchors.keys, 0f, 0f) //Prevent moving animation when over swiping
+                    resistance = ExpandableBoxSwipeableDefaults.resistanceConfig(anchors.keys, 0f, 0f), //Prevent moving animation when over swiping
+                    newAnchorsWithAnimated = newAnchorsWithAnimated
                 )
                 .nestedScroll(nestedScrollConnection)
         ) {
