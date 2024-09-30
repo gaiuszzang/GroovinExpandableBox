@@ -67,7 +67,7 @@ fun ExpandableBox(
                     if (!nestedScrollEnabled) return super.onPostScroll(consumed, available, source)
                     val delta = available.y
                     val progressState = expandableBoxState.progressValue
-                    return if (source == NestedScrollSource.Drag || progressState != ExpandableBoxStateValue.Expand) {
+                    return if (source == NestedScrollSource.UserInput || progressState != ExpandableBoxStateValue.Expand) {
                         Offset(0f, -expandableBoxState.performDrag(-delta))
                     } else {
                         super.onPostScroll(consumed, available, source)
