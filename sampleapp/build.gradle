@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.compose'
+    alias libs.plugins.android.application
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.kotlin.android.compose
 }
 
 android {
@@ -52,33 +52,31 @@ android {
 
 dependencies {
     //AndroidX Core
-    implementation "androidx.core:core-ktx:$androidx_core_version"
-    implementation 'androidx.datastore:datastore-core:1.1.1'
+    implementation libs.androidx.ktx
+    implementation libs.androidx.datastore.core
 
     //Compose
-    def composeBom = platform("androidx.compose:compose-bom:$compose_bom_version")
-    implementation composeBom
-    androidTestImplementation composeBom
+    implementation platform(libs.androidx.compose.bom)
+    implementation libs.androidx.compose.foundation
+    implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.util
 
-    implementation "androidx.compose.animation:animation"
-    implementation 'androidx.compose.material:material'
-    implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.compose.foundation:foundation'
-    implementation "androidx.compose.ui:ui"
-    implementation "androidx.compose.ui:ui-util"
-    implementation "androidx.compose.ui:ui-tooling-preview"
-    implementation "androidx.activity:activity-compose:1.9.2"
-    implementation "androidx.navigation:navigation-compose:2.8.1"
-    debugImplementation "androidx.compose.ui:ui-tooling"
+    implementation libs.androidx.compose.animation
+    implementation libs.androidx.compose.material
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.ui.preview
+    implementation libs.androidx.activity.compose
+    implementation libs.androidx.navigation.compose
+
+    debugImplementation libs.androidx.compose.ui.tooling
 
     //Lifecycle
-    def lifecycle_version = '2.8.6'
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation libs.androidx.lifecycle.runtime.ktx
+    implementation libs.androidx.lifecycle.viewmodel.ktx
+    implementation libs.androidx.lifecycle.viewmodel.compose
 
     //ConstraintLayout
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.1.0-beta01"
+    implementation libs.androidx.constraintlayout.compose
 
     //GroovinExpandableBox
     implementation project(path: ':expandablebox')
