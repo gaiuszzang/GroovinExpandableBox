@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -52,7 +53,7 @@ fun MapSampleScreen(
     val coroutineScope = rememberCoroutineScope()
     val hideHeight = remember { 96.dp }
     val foldHeight = remember { 300.dp }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
         val contentScrollState = rememberScrollState()
         val expandableBoxState = rememberExpandableBoxState(
             initialValue = ExpandableBoxStateValue.HalfExpand,

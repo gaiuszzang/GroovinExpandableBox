@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -35,7 +36,7 @@ fun ArticleSampleScreen() {
     val coroutineScope = rememberCoroutineScope()
     val articleList = remember { getArticleList() }
     var selectedArticle by remember { mutableStateOf(articleList[0]) }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
         val expandableBoxState = rememberExpandableBoxState(
             initialValue = ExpandableBoxStateValue.Fold
         )
