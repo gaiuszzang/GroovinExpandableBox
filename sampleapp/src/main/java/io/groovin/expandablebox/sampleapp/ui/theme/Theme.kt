@@ -53,6 +53,7 @@ fun GroovinExpandableBoxTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    /*
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -60,7 +61,7 @@ fun GroovinExpandableBoxTheme(
             window.statusBarColor = colorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = true
         }
-    }
+    }*/
 
     MaterialTheme(
         colorScheme = colorScheme,

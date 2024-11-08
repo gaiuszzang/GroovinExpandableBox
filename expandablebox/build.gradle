@@ -51,7 +51,7 @@ publishing {
         release(MavenPublication) {
             groupId = 'io.groovin'
             artifactId = 'expandablebox'
-            version = '1.2.6'
+            version = '1.2.8'
 
             afterEvaluate {
                 from components.release

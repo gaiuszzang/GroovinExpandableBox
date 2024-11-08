@@ -2,9 +2,13 @@ package io.groovin.expandablebox.sampleapp.music
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -41,7 +45,8 @@ fun MusicPlayerScreen(
     foldClick: () -> Unit,
     playClick: () -> Unit
 ) {
-    val constraintSets = remember(progressState) { getConstraintSets(progressState, minimizedHeight) }
+    val statusBarPaddingValues = WindowInsets.statusBars.asPaddingValues()
+    val constraintSets = remember(progressState) { getConstraintSets(progressState, minimizedHeight, statusBarPaddingValues) }
     MotionLayout(
         start = constraintSets.first,
         end = constraintSets.second,
@@ -91,10 +96,10 @@ fun MusicPlayerScreen(
     }
 }
 
-private fun getConstraintSets(state: ExpandableBoxStateValue, foldHeight: Dp) : Pair<ConstraintSet, ConstraintSet> {
+private fun getConstraintSets(state: ExpandableBoxStateValue, foldHeight: Dp, statusBarPaddingValues: PaddingValues) : Pair<ConstraintSet, ConstraintSet> {
     return when(state) {
         ExpandableBoxStateValue.Fold, ExpandableBoxStateValue.Folding -> Pair(hideConstraintSet(foldHeight), foldConstraintSet())
-        else -> Pair(foldConstraintSet(), expandConstraintSet())
+        else -> Pair(foldConstraintSet(), expandConstraintSet(statusBarPaddingValues))
     }
 }
 
@@ -178,18 +183,20 @@ private fun foldConstraintSet() = ConstraintSet {
     }
 }
 
-private fun expandConstraintSet() = ConstraintSet {
+private fun expandConstraintSet(statusBarPaddingValues: PaddingValues) = ConstraintSet {
     val poster = createRefFor("poster")
     val songTitle = createRefFor("songTitle")
     val foldButton = createRefFor("foldButton")
     val playButton = createRefFor("playButton")
     constrain(poster) {
-        width = Dimension.matchParent
+        width = Dimension.percent(0.7f)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
         top.linkTo(parent.top)
         bottom.linkTo(parent.bottom)
     }
     constrain(foldButton) {
-        top.linkTo(parent.top)
+        top.linkTo(parent.top, margin = statusBarPaddingValues.calculateTopPadding())
         start.linkTo(parent.start)
         alpha = 1f
     }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -30,7 +31,7 @@ fun MainScreen() {
     val navAction = LocalNavAction.current
     var isShowMapOptionDialog by remember { mutableStateOf(false) }
     var mapOption by remember { mutableIntStateOf(0) }
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()

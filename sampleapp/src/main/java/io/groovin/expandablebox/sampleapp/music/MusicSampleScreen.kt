@@ -1,19 +1,21 @@
 package io.groovin.expandablebox.sampleapp.music
 
-import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -23,10 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import io.groovin.expandablebox.ExpandableBox
@@ -45,7 +44,13 @@ fun MusicSampleScreen() {
     val context = LocalContext.current
     val playerCompactHeight = remember { 64.dp }
     val bottomBarHeight = remember { 80.dp }
-    Box(modifier = Modifier.fillMaxSize()) {
+    val navigationBarPaddingValues = WindowInsets.navigationBars.asPaddingValues()
+    val systemBarsPaddingValues = WindowInsets.systemBars.asPaddingValues()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         val expandableBoxState = rememberExpandableBoxState(
             initialValue = ExpandableBoxStateValue.HalfExpand
         )
@@ -53,6 +58,7 @@ fun MusicSampleScreen() {
             mutableFloatStateOf(1f)
         }
         MusicListScreen(
+            modifier = Modifier.padding(systemBarsPaddingValues),
             contentPadding = PaddingValues(bottom = playerCompactHeight + bottomBarHeight),
             onItemClick = { index ->
                 selectedItemIndex = index
@@ -90,7 +96,6 @@ fun MusicSampleScreen() {
                         Toast.makeText(context, "Play it!", Toast.LENGTH_SHORT).show()
                     }
                 )
-                SyncStatusBarColor(progressState, colorScheme.background)
                 BackHandler(
                     enabled = (completedState == ExpandableBoxStateValue.Expand) || (expandableBoxState.isAnimationRunning)
                 ) {
@@ -110,7 +115,9 @@ fun MusicSampleScreen() {
                 }
             }
             Box(
-                modifier = Modifier.height(bottomBarDynamicHeight)
+                modifier = Modifier
+                    .background(MusicPlayerScreenBackgroundColor)
+                    .height(bottomBarDynamicHeight + navigationBarPaddingValues.calculateBottomPadding())
             ) {
                 MusicBottomBar(
                     modifier = Modifier
@@ -118,26 +125,8 @@ fun MusicSampleScreen() {
                         .fillMaxWidth()
                         .wrapContentHeight(align = Alignment.Top, unbounded = true)
                         .height(bottomBarHeight)
-                        .background(MusicPlayerScreenBackgroundColor)
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun SyncStatusBarColor(
-    expandableBoxState: ExpandableBoxStateValue,
-    defaultColor: Color,
-    expandColor: Color = MusicPlayerScreenBackgroundColor
-) {
-    val view = LocalView.current
-    LaunchedEffect(expandableBoxState) {
-        val window = (view.context as Activity).window
-        if (expandableBoxState == ExpandableBoxStateValue.Expand) {
-            window.statusBarColor = expandColor.toArgb()
-        } else {
-            window.statusBarColor = defaultColor.toArgb()
         }
     }
 }
