@@ -74,12 +74,19 @@ fun ExpandableBox(
                     }
                 }
 
-                override suspend fun onPostFling(
-                    consumed: Velocity,
-                    available: Velocity
-                ): Velocity {
+                override suspend fun onPreFling(available: Velocity): Velocity {
+                    val progressState = expandableBoxState.progressValue
+                    if (progressState != ExpandableBoxStateValue.Expand && progressState != ExpandableBoxStateValue.Fold) {
+                        expandableBoxState.performFling(velocity = -available.y)
+                        return available
+                    } else {
+                        return super.onPreFling(available)
+                    }
+                }
+
+                override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
                     if (!nestedScrollEnabled) return super.onPostFling(consumed, available)
-                    expandableBoxState.performFling(velocity = available.y)
+                    expandableBoxState.performFling(velocity = -available.y)
                     return super.onPostFling(consumed, available)
                 }
             }
