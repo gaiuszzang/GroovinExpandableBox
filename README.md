@@ -77,6 +77,26 @@ A `ExpandableBoxScope` provides a scope with attributes for the content of Expan
 
 also, ExpandableBoxScope inheriting BoxScope, it can be used the same as BoxScope.
 
+## Known Issues
+### ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled
+There is a known issue with the Compose Foundation flag `isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled`. 
+When this flag is enabled (default behavior in newer Compose versions), nested composable scroll events may sometimes be delivered in the opposite direction unintentionally, causing unexpected scroll behavior in ExpandableBox.
+
+**Workaround:**
+If you experience unusual scroll behavior, you can disable this flag in your Application class:
+
+```kotlin
+class YourApplication : Application() {
+    @OptIn(ExperimentalFoundationApi::class)
+    override fun onCreate() {
+        super.onCreate()
+        ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled = false
+    }
+}
+```
+
+See the [SampleApplication](sampleapp/src/main/java/io/groovin/expandablebox/sampleapp/SampleApplication.kt) for reference.
+
 ## License
 ```xml
 Copyright 2023 gaiuszzang (Mincheol Shin)

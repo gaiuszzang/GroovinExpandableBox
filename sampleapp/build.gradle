@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'io.groovin.expandablebox.sampleapp'
-    compileSdk 35
+    compileSdk 36
 
     defaultConfig {
         applicationId "io.groovin.expandablebox.sampleapp"
         minSdk 24
-        targetSdk 35
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 
@@ -48,8 +48,8 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-    lintOptions {
-        disable "NullSafeMutableLiveData"
+    lint {
+        disable 'NullSafeMutableLiveData'
     }
 }
 
@@ -65,8 +65,8 @@ dependencies {
     implementation libs.androidx.compose.ui.util
 
     implementation libs.androidx.compose.animation
-    implementation libs.androidx.compose.material
     implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.material.icons.extended
     implementation libs.androidx.compose.ui.preview
     implementation libs.androidx.activity.compose
     implementation libs.androidx.navigation.compose
