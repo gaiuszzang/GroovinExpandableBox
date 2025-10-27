@@ -97,6 +97,8 @@ class YourApplication : Application() {
 
 See the [SampleApplication](sampleapp/src/main/java/io/groovin/expandablebox/sampleapp/SampleApplication.kt) for reference.
 
+**Note:** This issue only occurs in Compose Foundation version 1.9.x and has been resolved in version 1.10.0 and later.
+
 ## License
 ```xml
 Copyright 2023 gaiuszzang (Mincheol Shin)

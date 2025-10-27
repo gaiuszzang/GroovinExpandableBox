@@ -15,8 +15,11 @@ class SampleApplication: Application() {
     @OptIn(ExperimentalFoundationApi::class)
     private fun initComposeFlags() {
         /**
+         * Note :
          * isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled has issue that
          * nested composable scroll events are sometimes delivered in the opposite direction unintentionally.
+         *
+         * This issue is fixed on androidx.compose.foundation version 1.10.0-alpha02.
          */
         ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled = false
     }
