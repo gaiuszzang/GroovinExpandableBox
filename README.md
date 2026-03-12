@@ -9,15 +9,6 @@ This library offers a Box Composable that can be expanded/reduced through up/dow
 
 ## Including in your project
 ### Gradle
-Add below codes to `settings.gradle`.
-```gradle
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        maven { url "https://jitpack.io" }
-    }
-}
-```
 
 And add a dependency code to your **module**'s `build.gradle` file.
 ```gradle

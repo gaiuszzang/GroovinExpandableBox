@@ -1,12 +1,11 @@
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.android.compose
 }
 
 android {
     namespace 'io.groovin.expandablebox.sampleapp'
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId "io.groovin.expandablebox.sampleapp"
@@ -33,12 +32,8 @@ android {
             debuggable false
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        jvmToolchain(21)
     }
     buildFeatures {
         compose true

@@ -21,6 +21,6 @@ class SampleApplication: Application() {
          *
          * This issue is fixed on androidx.compose.foundation version 1.10.0-alpha02.
          */
-        ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled = false
+        //ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled = false
     }
 }

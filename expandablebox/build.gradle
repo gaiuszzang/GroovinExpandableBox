@@ -1,37 +1,46 @@
 plugins {
     alias libs.plugins.android.library
-    alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.android.compose
     alias libs.plugins.maven.publish
 }
 
+def publicationGroup = providers.gradleProperty("GROUP").get()
+def publicationArtifactId = providers.gradleProperty("POM_ARTIFACT_ID").orElse(project.name).get()
+def publicationVersion = providers.gradleProperty("VERSION_NAME").get()
+
+group = publicationGroup
+version = publicationVersion
+
 android {
-    namespace 'io.groovin.expandablebox'
-    compileSdk 36
-
+    namespace = 'io.groovin.expandablebox'
+    compileSdk = 36
     defaultConfig {
-        minSdk 24
-        targetSdk 36
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = 24
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
-
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = '17'
+    kotlin {
+        jvmToolchain(21)
     }
     buildFeatures {
-        compose true
+        compose = true
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    lint {
+        targetSdk = 36
+    }
+    testOptions {
+        targetSdk = 36
     }
 }
 
@@ -46,16 +55,33 @@ dependencies {
     implementation libs.androidx.compose.ui.util
 }
 
-publishing {
-    publications {
-        release(MavenPublication) {
-            groupId = 'io.groovin'
-            artifactId = 'expandablebox'
-            version = '1.2.10'
+mavenPublishing {
+    publishToMavenCentral()
+    signAllPublications()
 
-            afterEvaluate {
-                from components.release
+    coordinates(publicationGroup, publicationArtifactId, publicationVersion)
+
+    pom {
+        name = 'GroovinExpandableBox'
+        description = 'Groovin Expandable Box for Jetpack Compose'
+        url = 'https://github.com/gaiuszzang/GroovinExpandableBox'
+        licenses {
+            license {
+                name = 'Apache License 2.0'
+                url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
             }
+        }
+        developers {
+            developer {
+                id = 'gaiuszzang'
+                name = 'gaiuszzang'
+                url = 'https://github.com/gaiuszzang'
+            }
+        }
+        scm {
+            url = 'https://github.com/gaiuszzang/GroovinExpandableBox'
+            connection = 'scm:git:git://github.com/gaiuszzang/GroovinExpandableBox.git'
+            developerConnection = 'scm:git:ssh://git@github.com/gaiuszzang/GroovinExpandableBox.git'
         }
     }
 }
