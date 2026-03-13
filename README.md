@@ -1,5 +1,6 @@
 ## GroovinExpandableBox
-[![Release](https://jitpack.io/v/io.groovin/GroovinExpandableBox.svg)](https://jitpack.io/#io.groovin/GroovinExpandableBox)  
+[![Maven Central](https://img.shields.io/maven-central/v/io.groovin/expandablebox)](https://central.sonatype.com/artifact/io.groovin/expandablebox)
+
 This library offers a Box Composable that can be expanded/reduced through up/down swipe gestures.
 
 |                                                                    MusicPlayer Sample                                                                     |                                                                    Article Page Sample                                                                    |                                                                    Map Sample                                                                     |
