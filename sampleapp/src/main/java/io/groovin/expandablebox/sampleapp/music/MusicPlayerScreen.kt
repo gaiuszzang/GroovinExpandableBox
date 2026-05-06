@@ -2,28 +2,35 @@ package io.groovin.expandablebox.sampleapp.music
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.ExperimentalMotionApi
@@ -38,15 +45,19 @@ import io.groovin.expandablebox.sampleapp.R
 @Composable
 fun MusicPlayerScreen(
     modifier: Modifier = Modifier,
-    selectedItemIndex: Int,
+    songTitle: String,
+    isPlaying: Boolean,
     progress: Float,
     progressState: ExpandableBoxStateValue,
     minimizedHeight: Dp,
     foldClick: () -> Unit,
-    playClick: () -> Unit
+    playPauseClick: () -> Unit
 ) {
     val statusBarPaddingValues = WindowInsets.statusBars.asPaddingValues()
     val constraintSets = remember(progressState) { getConstraintSets(progressState, minimizedHeight, statusBarPaddingValues) }
+    val isExpandPhase = progressState == ExpandableBoxStateValue.Expand || progressState == ExpandableBoxStateValue.Expanding
+    val titleFontSize = (if (isExpandPhase) 14f + 10f * progress else 14f).sp
+    val titleFontWeight = if (isExpandPhase) FontWeight.Bold else FontWeight.Normal
     MotionLayout(
         start = constraintSets.first,
         end = constraintSets.second,
@@ -81,15 +92,33 @@ fun MusicPlayerScreen(
         Text(
             modifier = Modifier
                 .layoutId("songTitle"),
-            text = "Music Song : $selectedItemIndex Item"
+            text = songTitle,
+            fontSize = titleFontSize,
+            fontWeight = titleFontWeight
         )
+        Box(modifier = Modifier.layoutId("progressBar")) {
+            if (isPlaying) {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color.White,
+                    trackColor = Color.White.copy(alpha = 0.3f)
+                )
+            } else {
+                LinearProgressIndicator(
+                    progress = { 0f },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color.White,
+                    trackColor = Color.White.copy(alpha = 0.3f)
+                )
+            }
+        }
         IconButton(
             modifier = Modifier
                 .layoutId("playButton"),
-            onClick = { playClick() }
+            onClick = { playPauseClick() }
         ) {
             Icon(
-                imageVector = Icons.Default.PlayArrow,
+                imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                 contentDescription = null
             )
         }
@@ -117,6 +146,7 @@ private fun hideConstraintSet(foldHeight: Dp) = ConstraintSet {
     val songTitle = createRefFor("songTitle")
     val foldButton = createRefFor("foldButton")
     val playButton = createRefFor("playButton")
+    val progressBar = createRefFor("progressBar")
     constrain(poster) {
         width = Dimension.value(40.dp)
         height = Dimension.value(40.dp)
@@ -148,6 +178,14 @@ private fun hideConstraintSet(foldHeight: Dp) = ConstraintSet {
         bottom.linkTo(parent.bottom)
         alpha = 0f
     }
+    constrain(progressBar) {
+        translationY = foldHeight / 2
+        width = Dimension.fillToConstraints
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        bottom.linkTo(parent.bottom)
+        alpha = 0f
+    }
 }
 
 @SuppressLint("Range")
@@ -156,6 +194,7 @@ private fun foldConstraintSet() = ConstraintSet {
     val songTitle = createRefFor("songTitle")
     val foldButton = createRefFor("foldButton")
     val playButton = createRefFor("playButton")
+    val progressBar = createRefFor("progressBar")
     constrain(poster) {
         width = Dimension.value(60.dp)
         height = Dimension.value(60.dp)
@@ -181,6 +220,13 @@ private fun foldConstraintSet() = ConstraintSet {
         top.linkTo(parent.top)
         bottom.linkTo(parent.bottom)
     }
+    constrain(progressBar) {
+        width = Dimension.fillToConstraints
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        bottom.linkTo(parent.bottom)
+        alpha = 1f
+    }
 }
 
 private fun expandConstraintSet(statusBarPaddingValues: PaddingValues) = ConstraintSet {
@@ -188,30 +234,38 @@ private fun expandConstraintSet(statusBarPaddingValues: PaddingValues) = Constra
     val songTitle = createRefFor("songTitle")
     val foldButton = createRefFor("foldButton")
     val playButton = createRefFor("playButton")
-    constrain(poster) {
-        width = Dimension.percent(0.7f)
-        start.linkTo(parent.start)
-        end.linkTo(parent.end)
-        top.linkTo(parent.top)
-        bottom.linkTo(parent.bottom)
-    }
+    val progressBar = createRefFor("progressBar")
     constrain(foldButton) {
         top.linkTo(parent.top, margin = statusBarPaddingValues.calculateTopPadding())
         start.linkTo(parent.start)
         alpha = 1f
     }
+    constrain(poster) {
+        width = Dimension.percent(0.65f)
+        start.linkTo(parent.start)
+        end.linkTo(parent.end)
+        top.linkTo(foldButton.bottom, margin = 24.dp)
+    }
     constrain(songTitle) {
         width = Dimension.wrapContent
-        top.linkTo(poster.bottom)
+        top.linkTo(poster.bottom, margin = 32.dp)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
+    }
+    constrain(progressBar) {
+        width = Dimension.fillToConstraints
+        top.linkTo(songTitle.bottom, margin = 28.dp)
+        start.linkTo(parent.start, margin = 32.dp)
+        end.linkTo(parent.end, margin = 32.dp)
+        alpha = 1f
     }
     constrain(playButton) {
-        top.linkTo(songTitle.bottom)
+        top.linkTo(progressBar.bottom, margin = 36.dp)
         start.linkTo(parent.start)
         end.linkTo(parent.end)
+        scaleX = 1.8f
+        scaleY = 1.8f
     }
-
 }
 
 @OptIn(ExperimentalMotionApi::class)

@@ -16,10 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -41,6 +43,8 @@ private val MusicPlayerScreenBackgroundColor = Pink80
 fun MusicSampleScreen() {
     val coroutineScope = rememberCoroutineScope()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
+    var selectedTab by remember { mutableIntStateOf(0) }
+    var isPlaying by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val playerCompactHeight = remember { 64.dp }
     val bottomBarHeight = remember { 80.dp }
@@ -57,18 +61,36 @@ fun MusicSampleScreen() {
         val expandableProgress = remember {
             mutableFloatStateOf(1f)
         }
-        MusicListScreen(
-            modifier = Modifier.padding(systemBarsPaddingValues),
-            contentPadding = PaddingValues(bottom = playerCompactHeight + bottomBarHeight),
-            onItemClick = { index ->
-                selectedItemIndex = index
-                if (expandableBoxState.completedValue == ExpandableBoxStateValue.Fold) {
-                    coroutineScope.launch {
-                        expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
+        LaunchedEffect(expandableBoxState.completedValue) {
+            if (expandableBoxState.completedValue == ExpandableBoxStateValue.Fold && isPlaying) {
+                isPlaying = false
+                Toast.makeText(context, "Paused", Toast.LENGTH_SHORT).show()
+            }
+        }
+        when (selectedTab) {
+            0 -> MusicListScreen(
+                modifier = Modifier.padding(systemBarsPaddingValues),
+                contentPadding = PaddingValues(bottom = playerCompactHeight + bottomBarHeight),
+                onItemClick = { index ->
+                    selectedItemIndex = index
+                    if (expandableBoxState.completedValue == ExpandableBoxStateValue.Fold) {
+                        coroutineScope.launch {
+                            expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
+                        }
                     }
                 }
-            }
-        )
+            )
+            1 -> MusicFavoriteScreen(
+                modifier = Modifier
+                    .padding(systemBarsPaddingValues)
+                    .padding(bottom = playerCompactHeight + bottomBarHeight)
+            )
+            2 -> MusicProfileScreen(
+                modifier = Modifier
+                    .padding(systemBarsPaddingValues)
+                    .padding(bottom = playerCompactHeight + bottomBarHeight)
+            )
+        }
         Column(modifier = Modifier.align(Alignment.BottomCenter)) {
             ExpandableBox(
                 modifier = Modifier
@@ -83,7 +105,8 @@ fun MusicSampleScreen() {
                 MusicPlayerScreen(
                     modifier = Modifier
                         .background(MusicPlayerScreenBackgroundColor),
-                    selectedItemIndex = selectedItemIndex,
+                    songTitle = SampleSongTitles[selectedItemIndex],
+                    isPlaying = isPlaying,
                     progress = progress,
                     progressState = progressState,
                     minimizedHeight = playerCompactHeight,
@@ -92,8 +115,10 @@ fun MusicSampleScreen() {
                             expandableBoxState.animateTo(ExpandableBoxStateValue.HalfExpand)
                         }
                     },
-                    playClick = {
-                        Toast.makeText(context, "Play it!", Toast.LENGTH_SHORT).show()
+                    playPauseClick = {
+                        isPlaying = !isPlaying
+                        val message = if (isPlaying) "Play" else "Paused"
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     }
                 )
                 BackHandler(
@@ -124,7 +149,9 @@ fun MusicSampleScreen() {
                         .align(Alignment.TopCenter)
                         .fillMaxWidth()
                         .wrapContentHeight(align = Alignment.Top, unbounded = true)
-                        .height(bottomBarHeight)
+                        .height(bottomBarHeight),
+                    selectedTab = selectedTab,
+                    onTabClick = { selectedTab = it }
                 )
             }
         }

@@ -60,6 +60,13 @@ fun MainScreen() {
                     isShowMapOptionDialog = true
                 }
             )
+            MainItem(
+                modifier = Modifier.testTag("CalendarMenu"),
+                text = "Sample 4 : Calendar",
+                onClick = {
+                    navAction.moveToCalendarExpandBox()
+                }
+            )
         }
     }
     if (isShowMapOptionDialog) {

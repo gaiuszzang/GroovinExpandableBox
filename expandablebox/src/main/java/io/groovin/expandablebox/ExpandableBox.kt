@@ -75,6 +75,7 @@ fun ExpandableBox(
                 }
 
                 override suspend fun onPreFling(available: Velocity): Velocity {
+                    if (!nestedScrollEnabled) return super.onPreFling(available)
                     val progressState = expandableBoxState.progressValue
                     if (progressState != ExpandableBoxStateValue.Expand && progressState != ExpandableBoxStateValue.Fold) {
                         expandableBoxState.performFling(velocity = -available.y)
@@ -98,7 +99,7 @@ fun ExpandableBox(
                 .expandableBoxSwipeable(
                     state = expandableBoxState,
                     anchors = anchors,
-                    enabled = swipeGestureEnabled && foldHeightPx > 0 || expandableBoxState.completedValue != ExpandableBoxStateValue.Fold,
+                    enabled = swipeGestureEnabled && (foldHeightPx > 0 || expandableBoxState.completedValue != ExpandableBoxStateValue.Fold),
                     orientation = Orientation.Vertical,
                     reverseDirection = isDownDirection,
                     thresholds = { _, _ -> FractionalThreshold(0.7f) },

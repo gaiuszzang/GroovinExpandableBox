@@ -3,9 +3,13 @@
 
 This library offers a Box Composable that can be expanded/reduced through up/down swipe gestures.
 
-|                                                                    MusicPlayer Sample                                                                     |                                                                    Article Page Sample                                                                    |                                                                    Map Sample                                                                     |
-|:---------------------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------:|
-| <img src="https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/66df4c2e-c4f6-498b-8522-61497cef70a4" alt="MusicPlayerSample" width="240px"> | <img src="https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/78bdc12b-6884-4d4b-9470-76440474d461" alt="ArticlePageSample" width="240px"> | <img src="https://github.com/gaiuszzang/GroovinExpandableBox/assets/15318053/233f2b70-f706-45fc-89b4-d92227b6467e" alt="MapSample" width="240px"> |
+| MusicPlayer Sample | Article Page Sample |
+|:------------------:|:-------------------:|
+| <img src=".github/contents/01_musicplayer.gif" alt="MusicPlayerSample" width="240px"> | <img src=".github/contents/02_articlepage.gif" alt="ArticlePageSample" width="240px"> |
+
+| Map Sample | Calendar Sample |
+|:----------:|:---------------:|
+| <img src=".github/contents/03_map.gif" alt="MapSample" width="240px"> | <img src=".github/contents/04_calendar.gif" alt="CalendarSample" width="240px"> |
 
 
 ## Including in your project
@@ -14,7 +18,7 @@ This library offers a Box Composable that can be expanded/reduced through up/dow
 And add a dependency code to your **module**'s `build.gradle` file.
 ```gradle
 dependencies {
-    implementation 'io.groovin:GroovinExpandableBox:x.x.x'
+    implementation 'io.groovin:expandablebox:x.x.x'
 }
 ```
 
@@ -29,20 +33,23 @@ ExpandableBox(
     swipeDirection = ExpandableBoxSwipeDirection.SwipeUpToExpand,
     foldHeight = 100.dp,
     halfExpandHeight = 300.dp,
+    expandHeight = Dp.Unspecified,
     swipeGestureEnabled = true,
-    nestedScrollEnabled = true
+    nestedScrollEnabled = true,
+    newAnchorsWithAnimated = true
 ) {
     Content(...)   //Contents Composable
 }
 ```
-There are 6 arguments to be aware of use.
+Key arguments are listed below.
  - `expandableBoxState` : ExpandableBox needs ExpandableBoxState for store and use its status. See the section below for details.
  - `swipeDirection` : You can set the Swipe direction for expanding this. `default = SwipeUpToExpand`
  - `foldHeight` : Define the Minimized Height. `Mandatory`
  - `halfExpandHeight` : Define the Half Expanded Height If you want to use Half Expanded State. If not defined, half expanded state is not used. `Optional`
  - `expandHeight` : Define the Fully Expanded Height. The default is `Dp.Unspecified`, which sets it to the parent's maximum height. `Optional`
  - `swipeGestureEnabled` : You can disable swipe gesture. `default = true`
- - `nestedScrollEnabled` : You can enable nested scrolling to allowing seamless swipe gesture with scrollable composable like Column or LazyColumn. `default = true`
+ - `nestedScrollEnabled` : You can enable nested scrolling to allow seamless swipe gesture with scrollable composable like Column or LazyColumn. `default = true`
+ - `newAnchorsWithAnimated` : When the box anchors change, animate to the new offset instead of snapping immediately. `default = true`
 
 
 #### ExpandableBoxState
@@ -50,16 +57,16 @@ ExpandableBox needs `ExpandableBoxState` instance for store and use its status.
 ```kotlin
 val expandableBoxState = rememberExpandableBoxState(initialValue = ExpandableBoxStateValue.Fold)
 ```
-One of the values below must be set as the initial value.
+Only one of the values below must be set as the initial value.
 - `ExpandableBoxStateValue.Fold` : Begin with Minimized state.
-- `ExpandableBoxStateValue.HalfExpand` : Begin with Half Expanded state. Note that halfExpandHeight parameter in ExpandableBox should be defined to specific value for use this.
+- `ExpandableBoxStateValue.HalfExpand` : Begin with Half Expanded state. Note that `halfExpandHeight` must be different from `foldHeight` to use this.
 - `ExpandableBoxStateValue.Expand` : Begin with Fully Expanded state.
 
 ExpandableBoxState exposes following parameters.
 - `completedValue` : Indicates that latest completion State : `Fold`, `HalfExpand`, `Expand`
-- `progressValue` : Indicates that current Progress State : `Fold`, `Folding`, `HalfExpanding`, `Expanding`, `Expand`
-- `offset` : Indicates that current height pixel.
-Note that `Folding`, `HalfExpand` State is only available when only Half Expand state is used.
+- `progressValue` : Indicates that current Progress State : `Fold`, `Folding`, `HalfExpand`, `Expanding`, `Expand`
+- `offset` : Indicates the current height offset in pixels.
+Note that `Folding` and `HalfExpand` States are only available when Half Expand state is used.
 
 #### ExpandableBoxScope
 A `ExpandableBoxScope` provides a scope with attributes for the content of ExpandableBox.
@@ -68,28 +75,6 @@ A `ExpandableBoxScope` provides a scope with attributes for the content of Expan
 - `progressState: ExpandableBoxStateValue` : It is same with ExpandableBoxState.progressValue
 
 also, ExpandableBoxScope inheriting BoxScope, it can be used the same as BoxScope.
-
-## Known Issues
-### ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled
-There is a known issue with the Compose Foundation flag `isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled`. 
-When this flag is enabled (default behavior in newer Compose versions), nested composable scroll events may sometimes be delivered in the opposite direction unintentionally, causing unexpected scroll behavior in ExpandableBox.
-
-**Workaround:**
-If you experience unusual scroll behavior, you can disable this flag in your Application class:
-
-```kotlin
-class YourApplication : Application() {
-    @OptIn(ExperimentalFoundationApi::class)
-    override fun onCreate() {
-        super.onCreate()
-        ComposeFoundationFlags.isAdjustPointerInputChangeOffsetForVelocityTrackerEnabled = false
-    }
-}
-```
-
-See the [SampleApplication](sampleapp/src/main/java/io/groovin/expandablebox/sampleapp/SampleApplication.kt) for reference.
-
-**Note:** This issue only occurs in Compose Foundation version 1.9.x and has been resolved in version 1.10.0 and later.
 
 ## License
 ```xml

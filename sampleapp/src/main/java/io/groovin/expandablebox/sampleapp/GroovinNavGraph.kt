@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import io.groovin.expandablebox.sampleapp.article.ArticleSampleScreen
 import io.groovin.expandablebox.sampleapp.map.MapNestedScrollOption
 import io.groovin.expandablebox.sampleapp.map.MapSampleScreen
+import io.groovin.expandablebox.sampleapp.calendar.CalendarSampleScreen
 import io.groovin.expandablebox.sampleapp.music.MusicSampleScreen
 
 
@@ -22,6 +23,7 @@ object GroovinDestination {
     const val MUSIC_SAMPLE = "MusicSample"
     const val ARTICLE_SAMPLE = "ArticleSample"
     const val MAP_SAMPLE = "MapSample"
+    const val CALENDAR_SAMPLE = "CalendarSample"
 }
 
 val LocalNavAction = compositionLocalOf<GroovinAction> { error("can't find GroovinAction") }
@@ -71,6 +73,9 @@ fun GroovinNavGraph(
             val nestedScrollOption = it.arguments?.getInt("nestedScrollOption", 0) ?: 0
             MapSampleScreen(MapNestedScrollOption.from(nestedScrollOption))
         }
+        composable(GroovinDestination.CALENDAR_SAMPLE) {
+            CalendarSampleScreen()
+        }
     }
 }
 
@@ -83,6 +88,9 @@ class GroovinAction(private val navController: NavHostController?) {
     }
     val moveToMapExpandBox: (Int) -> Unit = { nestedScrollOption ->
         navController?.navigate(GroovinDestination.MAP_SAMPLE + "?nestedScrollOption=$nestedScrollOption")
+    }
+    val moveToCalendarExpandBox: () -> Unit = {
+        navController?.navigate(GroovinDestination.CALENDAR_SAMPLE)
     }
     val moveToBack: () -> Unit = {
         navController?.popBackStack()

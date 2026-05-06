@@ -21,6 +21,38 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.layoutId
 import io.groovin.expandablebox.sampleapp.R
 
+internal val SampleSongTitles: List<String> = listOf(
+    "Velvet Horizon",
+    "Midnight Cassette",
+    "Paper Lanterns",
+    "Blue Hour Drive",
+    "Echo of Tomorrow",
+    "Sundown Boulevard",
+    "Glass City Rain",
+    "Polaroid Days",
+    "Lavender Static",
+    "Moonlit Promenade",
+    "Cinderblock Heart",
+    "Stray Constellations",
+    "Honeycomb Sky",
+    "Distant Radio",
+    "Neon Tides",
+    "Postcards from Mars",
+    "Velour Sunday",
+    "Asphalt Reverie",
+    "Ferris Wheel Lights",
+    "Tangerine Pulse",
+    "Holographic Summer",
+    "Last Train to Nowhere",
+    "Pixel Sunset",
+    "Jasmine Avenue",
+    "Cobalt Dreaming",
+    "Slow Burn Cinema",
+    "Aurora Cassette",
+    "Saltwater Lullaby",
+    "Carbon Heartbeat",
+    "Paperback Romance"
+)
 
 @Composable
 fun MusicListScreen(
@@ -33,12 +65,12 @@ fun MusicListScreen(
         contentPadding = contentPadding
     ) {
         items(
-            count = 100,
+            count = SampleSongTitles.size,
             key = { index -> "MusicSongItem$index" },
             contentType = { _ -> "MusicSongItem" }
         ) { index ->
             MusicListItem(
-                title = "Music Song $index Item",
+                title = SampleSongTitles[index],
                 onClick = {
                     onItemClick?.invoke(index)
                 }
